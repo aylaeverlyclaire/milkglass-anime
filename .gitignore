@@ -1,0 +1,18 @@
+# Node modules & temporary caches
+node_modules/
+.npm/
+*.log
+
+# Scratch testing scripts
+test_*.mjs
+test_*.py
+get_ids.js
+verify_ids.js
+capture_*.mjs
+inspect_embed.py
+check_frieren.py
+generate_new_ui.py
+
+# OS metadata
+.DS_Store
+Thumbs.db
