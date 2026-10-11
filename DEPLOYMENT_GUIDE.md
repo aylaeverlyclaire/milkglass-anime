@@ -32,9 +32,9 @@ Server lokal gateway saat ini aktif berjalan pada `0.0.0.0:8000`:
    git remote add origin https://github.com/<username-anda>/milkglass-anime.git
    git push -u origin main
    ```
-4. Di halaman repositori GitHub:
-   - Masuk ke **Settings** -> **Pages**.
-   - Pada bagian **Build and deployment** -> **Source**, pilih **GitHub Actions**.
+4. Repositori resmi telah tersambung dan aktif:
+   - **GitHub Repository**: `https://github.com/aylaeverlyclaire/milkglass-anime`
+   - **Production Edge URL**: `https://aylaeverlyclaire.github.io/milkglass-anime/`
 
 ### Otomasi Deploy Selanjutnya
 Setiap kali ada perubahan baru yang dikonfirmasi, Anda atau sistem cukup menjalankan:
@@ -49,11 +49,11 @@ Skrip ini akan secara otomatis:
 1. Menjalankan *pre-flight regression check* (memastikan 0 ID rusak dan 0 emoji).
 2. Mengompilasi *standalone preview artifact*.
 3. Melakukan *commit* Git dengan format korporat.
-4. Mendorong ke `main`, yang langsung memicu GitHub Actions / Cloudflare Pages untuk merilis situs secara global ke:
+4. Mendorong ke `main`, yang langsung memicu GitHub Actions untuk merilis situs secara global dalam < 30 detik ke:
    ```text
-   https://<username-anda>.github.io/milkglass-anime/
+   https://aylaeverlyclaire.github.io/milkglass-anime/
    ```
-   Atau pada Cloudflare Pages:
+   Atau jika dihubungkan ke Cloudflare Pages:
    ```text
    https://milkglass-anime.pages.dev
    ```
