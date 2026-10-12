@@ -245,6 +245,10 @@
       justify-content: center;
       flex-shrink: 0;
     }
+    .fluent-circular-badge > * {
+      position: relative;
+      z-index: 2;
+    }
     .fluent-circular-badge::before {
       content: '';
       position: absolute;
@@ -256,6 +260,15 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
       pointer-events: none;
+      z-index: 1;
+    }
+    @supports not (mask-composite: exclude) {
+      .fluent-circular-badge {
+        border: 1.5px solid #06b6d4;
+      }
+      .fluent-circular-badge::before {
+        display: none;
+      }
     }
 
     /* Apple Deep Obsidian Card (Zero Blur pass for mid-spec mobile 60fps) */
@@ -339,29 +352,26 @@
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
-    /* Fluent 2 Floating Feedback Pill */
+    /* Fluent 2 Floating / Docked Feedback Pill (Screenshot 1 Fidelity) */
     .fluent-feedback-pill {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 35;
       background: #161a26;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       color: #f1f5f9;
       border-radius: 9999px;
-      padding: 8px 16px;
+      padding: 7px 16px;
       font-size: 12px;
       font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      display: flex;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
+      cursor: pointer;
+      transition: all 0.18s ease;
     }
     .fluent-feedback-pill:hover {
-      background: #1f2537;
+      background: #20273a;
       border-color: rgba(255, 255, 255, 0.28);
-      transform: translateY(-2px);
+      transform: translateY(-1.5px);
     }
 
   </style>
@@ -481,77 +491,53 @@
 
   <!-- TOP FLOATING SPATIAL CONTROL BRIDGE (FLUENT 2 & APPLE SUBNAV HYBRID) -->
   <header class="sticky top-0 z-40 w-full transition-all bg-[#0c101c]/95 border-b border-white/10 backdrop-blur-md">
-    <!-- Fluent 2 Master Chrome Bar -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 flex items-center justify-between gap-2 sm:gap-4">
+    <!-- Fluent 2 Master Chrome Bar (Strict Screenshot 1 Reproduction) -->
+    <div class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 flex items-center justify-between gap-1.5 sm:gap-4">
       
       <!-- Left: Drawer Icon & Fluent 2 Stylized Branding -->
-      <div class="flex items-center gap-3 shrink-0">
-        <button onclick="toggleCommandPalette()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-all border border-white/10" title="Open App Drawer">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button onclick="toggleCommandPalette()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-all border border-white/10 shrink-0" title="Open App Drawer">
           <i data-lucide="menu" class="w-4 h-4"></i>
         </button>
-        <a href="#" onclick="switchMainView('console'); return false;" class="flex items-center gap-2 group">
+        <a href="#" onclick="switchMainView('console'); return false;" class="flex items-center gap-1.5 group shrink-0">
           <!-- Fluent 2 Geometry Logo Mark -->
-          <svg class="w-6 h-6 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="3" width="8" height="8" rx="2" fill="#0078d4"/>
             <rect x="13" y="3" width="8" height="8" rx="2" fill="#50e6ff"/>
             <rect x="3" y="13" width="8" height="8" rx="2" fill="#2b88d8"/>
             <rect x="13" y="13" width="8" height="8" rx="2" fill="#005a9e"/>
           </svg>
-          <span class="text-sm font-semibold tracking-tight text-white font-sans hidden sm:inline">Fluent 2</span>
-          <span class="text-slate-500 font-light hidden sm:inline">|</span>
-          <span class="text-sm font-bold tracking-tight text-white font-mono">MILKGLASS</span>
-          <span class="hidden lg:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+          <span class="text-xs sm:text-sm font-semibold tracking-tight text-white font-sans inline">Fluent 2</span>
+          <span class="text-slate-500 font-light hidden md:inline">|</span>
+          <span class="text-xs sm:text-sm font-bold tracking-tight text-white font-mono hidden md:inline">MILKGLASS</span>
+          <span class="hidden xl:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SLA 99.99%
           </span>
         </a>
       </div>
 
-      <!-- Center: Theme Toggle Pill -->
-      <div class="hidden sm:flex items-center">
-        <button id="themeToggleBtn" onclick="toggleThemeMode()" class="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-medium border border-white/10 transition-all">
-          <i data-lucide="sun-moon" class="w-3.5 h-3.5 text-slate-300"></i>
-          <span>Theme</span>
-          <span class="w-7 h-4 rounded-full bg-white/20 p-0.5 flex items-center justify-end">
-            <span class="w-3 h-3 rounded-full bg-white"></span>
+      <!-- Center: Theme Toggle Pill (Authentic Screenshot 1 element, visible on mobile & desktop) -->
+      <div class="flex items-center shrink-0">
+        <button id="themeToggleBtn" onclick="toggleThemeMode()" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 text-[11px] sm:text-xs font-medium border border-white/10 transition-all shrink-0">
+          <i data-lucide="sun-moon" class="w-3.5 h-3.5 text-slate-300 shrink-0"></i>
+          <span class="inline">Theme</span>
+          <span class="w-6 sm:w-7 h-3.5 sm:h-4 rounded-full bg-white/20 p-0.5 flex items-center justify-end">
+            <span class="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-white"></span>
           </span>
         </button>
       </div>
 
-      <!-- Right: Microsoft Employee Sign-in & Language & Search -->
-      <div class="flex items-center gap-2">
-        
-        <!-- Global Search Input -->
-        <div class="relative w-36 sm:w-56">
-          <input 
-            type="text" 
-            id="globalSearchInput"
-            placeholder="Search catalog..." 
-            class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-11 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
-          >
-          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
-          <kbd onclick="toggleCommandPalette()" class="hidden sm:inline-block absolute right-2 top-1.5 text-[9px] font-mono px-1 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-slate-300 cursor-pointer transition-colors" title="Open Command Palette (Ctrl+K)">Ctrl+K</kbd>
-          <button id="clearSearchBtn" class="hidden absolute right-2 top-1.5 text-slate-400 hover:text-white">
-            <i data-lucide="x" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
-        <!-- Subtitle Preference Toggle -->
-        <div class="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10 text-xs font-mono">
-          <button id="prefSubIndoBtn" onclick="setSubtitlePreference('id')" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white transition-all shadow-sm">ID</button>
-          <button id="prefSubEngBtn" onclick="setSubtitlePreference('en')" class="px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition-all">EN</button>
-        </div>
-
-        <!-- Microsoft Authentic Employee Sign-in Pill Button -->
-        <button id="employeeSignInBtn" onclick="openEmployeeSignInModal()" class="px-3 py-1.5 rounded-full bg-white hover:bg-slate-100 text-[#111625] font-semibold text-xs flex items-center gap-2 shadow-sm transition-all active:scale-95 shrink-0" title="Corporate Single Sign-On">
+      <!-- Right: Microsoft Authentic Employee Sign-in Pill Button (Authentic Screenshot 1 element) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="employeeSignInBtn" onclick="openEmployeeSignInModal()" class="px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-100 text-[#111625] font-semibold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all active:scale-95 shrink-0" title="Corporate Single Sign-On">
           <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 21 21">
             <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
             <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
             <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
             <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
           </svg>
-          <span class="hidden md:inline">Employee sign-in</span>
+          <span class="inline font-sans">Employee sign-in</span>
         </button>
-
       </div>
     </div>
 
@@ -565,27 +551,51 @@
           <span class="text-[10px] text-slate-400 hidden sm:inline font-mono">AV1 Cinema Architecture</span>
         </div>
 
-        <!-- Center: Spatial View Switcher Pills -->
-        <nav class="hidden md:flex items-center gap-1 font-mono text-xs">
-          <button id="navBtnConsole" onclick="switchMainView('console')" class="px-3 py-1 rounded-lg text-white font-semibold bg-brand-600 shadow-sm flex items-center gap-1.5 transition-all">
-            <i data-lucide="tv" class="w-3.5 h-3.5"></i> Console
-          </button>
-          <button id="navBtnRadar" onclick="switchMainView('radar')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-            <i data-lucide="radar" class="w-3.5 h-3.5 text-blue-400"></i> Radar
-          </button>
-          <button id="navBtnCatalog" onclick="switchMainView('catalog')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-            <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-400"></i> Catalog
-          </button>
-          <button id="navBtnVault" onclick="switchMainView('vault')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-            <i data-lucide="archive" class="w-3.5 h-3.5 text-emerald-400"></i> Batch Vault
-          </button>
-          <button id="navBtnNetwork" onclick="switchMainView('network')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-            <i data-lucide="activity" class="w-3.5 h-3.5 text-amber-400"></i> CDN NOC
-          </button>
-        </nav>
+        <!-- Center: Spatial View Switcher Pills & Global Search Input -->
+        <div class="hidden md:flex items-center gap-3">
+          <!-- Global Search Input -->
+          <div class="relative w-40 lg:w-56">
+            <input 
+              type="text" 
+              id="globalSearchInput"
+              placeholder="Search catalog..." 
+              class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-11 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
+            >
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
+            <kbd onclick="toggleCommandPalette()" class="hidden sm:inline-block absolute right-2 top-1.5 text-[9px] font-mono px-1 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-slate-300 cursor-pointer transition-colors" title="Open Command Palette (Ctrl+K)">Ctrl+K</kbd>
+            <button id="clearSearchBtn" class="hidden absolute right-2 top-1.5 text-slate-400 hover:text-white">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Subtitle Preference Toggle -->
+          <div class="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10 text-xs font-mono">
+            <button id="prefSubIndoBtn" onclick="setSubtitlePreference('id')" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white transition-all shadow-sm">ID</button>
+            <button id="prefSubEngBtn" onclick="setSubtitlePreference('en')" class="px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition-all">EN</button>
+          </div>
+
+          <!-- Spatial View Switcher Pills -->
+          <nav class="flex items-center gap-1 font-mono text-xs">
+            <button id="navBtnConsole" onclick="switchMainView('console')" class="px-3 py-1 rounded-lg text-white font-semibold bg-brand-600 shadow-sm flex items-center gap-1.5 transition-all">
+              <i data-lucide="tv" class="w-3.5 h-3.5"></i> Console
+            </button>
+            <button id="navBtnRadar" onclick="switchMainView('radar')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
+              <i data-lucide="radar" class="w-3.5 h-3.5 text-blue-400"></i> Radar
+            </button>
+            <button id="navBtnCatalog" onclick="switchMainView('catalog')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
+              <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-400"></i> Catalog
+            </button>
+            <button id="navBtnVault" onclick="switchMainView('vault')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
+              <i data-lucide="archive" class="w-3.5 h-3.5 text-emerald-400"></i> Batch Vault
+            </button>
+            <button id="navBtnNetwork" onclick="switchMainView('network')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-amber-400"></i> CDN NOC
+            </button>
+          </nav>
+        </div>
 
         <!-- Right: Apple Dual Action Pills -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <button onclick="scrollToExplore()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
             Explore
           </button>
@@ -598,14 +608,21 @@
 
       <!-- Mobile Sub-Navigation Strip & Search -->
       <div class="flex flex-col md:hidden gap-1.5 mt-2 px-1 text-[11px] font-mono">
-        <div class="relative w-full">
-          <input 
-            type="text" 
-            id="mobileSearchInput"
-            placeholder="Search catalog (Mobile)..." 
-            class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-3 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 font-sans"
-          >
-          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="mobileSearchInput"
+              placeholder="Search catalog (Mobile)..." 
+              class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-3 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 font-sans"
+            >
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
+          </div>
+          <!-- Mobile Subtitle Preference Toggle -->
+          <div class="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10 text-xs font-mono shrink-0">
+            <button onclick="setSubtitlePreference('id')" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white transition-all shadow-sm">ID</button>
+            <button onclick="setSubtitlePreference('en')" class="px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition-all">EN</button>
+          </div>
         </div>
         <div class="flex items-center justify-between gap-1 overflow-x-auto py-0.5">
           <button onclick="switchMainView('console')" class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium shrink-0">Console</button>
@@ -801,21 +818,21 @@
           </p>
         </div>
 
-        <!-- 2x2 Grid of Deep Obsidian Cards (Border-radius: 28px, #141416) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl">
+        <!-- 2x2 Grid of Deep Obsidian Cards (Border-radius: 28px, #141416, 2x2 on all viewports) -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 max-w-5xl">
           
           <!-- Card 1: 4K UHD Master Stream Engine -->
-          <div class="apple-obsidian-card p-6 sm:p-7 flex flex-col justify-between min-h-[260px]">
+          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between min-h-[220px] sm:min-h-[260px]">
             <div>
-              <h3 id="comparisonCameraSpec" class="text-sm sm:text-base font-semibold text-slate-200 leading-snug">
+              <h3 id="comparisonCameraSpec" class="text-xs sm:text-base font-semibold text-slate-200 leading-snug">
                 4K UHD Master Stream Engine with variable bitrate and Pro controls
               </h3>
             </div>
-            <div class="mt-6 flex items-center justify-center">
-              <div class="relative w-36 h-28 rounded-2xl bg-black/60 border border-white/15 p-2 flex items-center justify-center overflow-hidden">
-                <div class="w-20 h-20 rounded-full border-2 border-brand-500/40 flex items-center justify-center shadow-lg shadow-brand-500/20">
-                  <div class="w-14 h-14 rounded-full border border-white/30 flex items-center justify-center bg-gradient-to-tr from-brand-600/30 to-purple-600/30">
-                    <i data-lucide="aperture" class="w-7 h-7 text-white"></i>
+            <div class="mt-4 sm:mt-6 flex items-center justify-center">
+              <div class="relative w-24 h-20 sm:w-36 sm:h-28 rounded-2xl bg-black/60 border border-white/15 p-2 flex items-center justify-center overflow-hidden">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-brand-500/40 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                  <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-full border border-white/30 flex items-center justify-center bg-gradient-to-tr from-brand-600/30 to-purple-600/30">
+                    <i data-lucide="aperture" class="w-5 h-5 sm:w-7 sm:h-7 text-white"></i>
                   </div>
                 </div>
               </div>
@@ -823,48 +840,48 @@
           </div>
 
           <!-- Card 2: Quantum A20 Pro Processing Core -->
-          <div class="apple-obsidian-card p-6 sm:p-7 flex flex-col justify-between items-center text-center min-h-[260px]">
+          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
             <div class="w-full">
-              <div class="apple-chip-badge w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 p-3 flex flex-col items-center justify-center">
-                <svg class="w-7 h-7 text-black mb-0.5" viewBox="0 0 24 24" fill="currentColor">
+              <div class="apple-chip-badge w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-2 sm:mb-4 p-2 sm:p-3 flex flex-col items-center justify-center">
+                <svg class="w-5 h-5 sm:w-7 sm:h-7 text-black mb-0.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.12.64-2.79 1.43-.59.68-1.1 1.77-1.01 2.81 1.07.08 2.18-.62 2.79-1.37z"/>
                 </svg>
-                <span class="font-extrabold text-xs sm:text-sm tracking-tight text-black font-sans">A20 PRO</span>
+                <span class="font-extrabold text-[10px] sm:text-sm tracking-tight text-black font-sans">A20 PRO</span>
               </div>
             </div>
             <div>
-              <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 id="comparisonChipSpeed" class="text-2xl sm:text-3xl font-extrabold text-white my-1 font-sans">20% faster</h3>
-              <p class="text-xs sm:text-sm text-slate-300 font-medium">6-core CPU multi-CDN decoding</p>
+              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
+              <h3 id="comparisonChipSpeed" class="text-lg sm:text-3xl font-extrabold text-white my-0.5 sm:my-1 font-sans">20% faster</h3>
+              <p class="text-[10px] sm:text-sm text-slate-300 font-medium">6-core CPU multi-CDN decoding</p>
             </div>
           </div>
 
           <!-- Card 3: 6 More Hours Battery Visual -->
-          <div class="apple-obsidian-card p-6 sm:p-7 flex flex-col justify-between items-center text-center min-h-[260px]">
+          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
             <div>
-              <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-white mt-1 mb-2 font-sans">
+              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
+              <h3 class="text-lg sm:text-3xl font-extrabold text-white mt-0.5 sm:mt-1 mb-1 sm:mb-2 font-sans">
                 <span id="comparisonBatteryHours">6 more hours</span>
               </h3>
-              <div class="apple-battery-shell mx-auto my-3">
+              <div class="apple-battery-shell mx-auto my-2 sm:my-3">
                 <div class="apple-battery-fill"></div>
               </div>
             </div>
-            <p class="text-xs sm:text-sm text-slate-300 font-medium">
+            <p class="text-[10px] sm:text-sm text-slate-300 font-medium">
               video playback on Milkglass Pro Max
             </p>
           </div>
 
           <!-- Card 4: 50% Fast Buffer in 15 seconds -->
-          <div class="apple-obsidian-card p-6 sm:p-7 flex flex-col justify-between items-center text-center min-h-[260px]">
+          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
             <div>
-              <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-white mt-1 mb-2 font-sans">50% buffer</h3>
-              <div class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center mx-auto my-2 text-blue-400">
-                <i data-lucide="zap" class="w-5 h-5 fill-blue-400"></i>
+              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
+              <h3 class="text-lg sm:text-3xl font-extrabold text-white mt-0.5 sm:mt-1 mb-1 sm:mb-2 font-sans">50% buffer</h3>
+              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center mx-auto my-1.5 sm:my-2 text-blue-400">
+                <i data-lucide="zap" class="w-4 h-4 sm:w-5 sm:h-5 fill-blue-400"></i>
               </div>
             </div>
-            <p id="comparisonBufferSpec" class="text-xs sm:text-sm text-slate-300 font-medium">
+            <p id="comparisonBufferSpec" class="text-[10px] sm:text-sm text-slate-300 font-medium">
               in around 15 seconds with compatible adapter and multi-CDN failover
             </p>
           </div>
@@ -885,11 +902,11 @@
           </a>
         </div>
 
-        <!-- Phone Hardware Frame Showcase Carousel -->
-        <div class="flex flex-col md:flex-row items-center gap-8 justify-start overflow-x-auto pb-4">
+        <!-- Phone Hardware Frame Showcase Carousel (Horizontal Swipe Physics & Snap) -->
+        <div class="flex flex-row items-start gap-6 sm:gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth -webkit-overflow-scrolling-touch scrollbar-none">
           
           <!-- Device Frame 1: Boarding Pass & Call Context -->
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-start shrink-0 w-[280px] sm:w-[320px] snap-start">
             <div class="apple-phone-bezel p-3 flex flex-col justify-between bg-gradient-to-b from-[#2d1b24] via-[#140e16] to-[#0a080d]">
               <!-- Dynamic Island Pill -->
               <div class="apple-dynamic-island">
@@ -927,7 +944,7 @@
           </div>
 
           <!-- Device Frame 2: Child Safety & AdShield Protection -->
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-start shrink-0 w-[280px] sm:w-[320px] snap-start">
             <div class="apple-phone-bezel p-3 flex flex-col justify-between bg-gradient-to-b from-[#162032] via-[#0c121e] to-[#070b12]">
               <!-- Dynamic Island Pill -->
               <div class="apple-dynamic-island">
@@ -962,8 +979,13 @@
       <!-- ========================================================================= -->
       <!-- SECTION: MICROSOFT FLUENT 2 SPECULAR GRADIENT BORDER CARDS STACK          -->
       <!-- ========================================================================= -->
-      <section id="fluentDesignSection" class="space-y-4 pt-4 border-t border-white/10">
-        <div class="flex items-center justify-between">
+      <section id="fluentDesignSection" class="relative space-y-4 pt-6 border-t border-white/10 overflow-hidden">
+        
+        <!-- Curved Atmospheric Earth Horizon Glow (Strict Screenshot 1 Reproduction) -->
+        <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[140%] h-44 rounded-[100%] bg-gradient-to-b from-blue-500/20 via-cyan-500/10 to-transparent blur-xl pointer-events-none"></div>
+        <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[120%] h-36 rounded-[100%] border-t-2 border-cyan-400/25 pointer-events-none"></div>
+
+        <div class="relative z-10 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <rect x="3" y="3" width="8" height="8" rx="2" fill="#0078d4"/>
@@ -978,57 +1000,47 @@
           <span class="text-[11px] text-slate-400 font-mono">WCAG 2.2 Compliant</span>
         </div>
 
-        <!-- Vertical Stack of Distinctive Cards -->
-        <div class="space-y-3.5 max-w-3xl">
+        <!-- Vertical Stack of Distinctive Cards (Pixel-faithful to Screenshot 1) -->
+        <div class="relative z-10 space-y-3.5 max-w-3xl">
           
-          <!-- Card 1: ACTIVE FOCUS ORDER CARD WITH GLOWING SPECULAR GRADIENT BORDER -->
+          <!-- Card 1: ACTIVE CARD WITH GLOWING SPECULAR GRADIENT BORDER -->
           <div class="fluent-gradient-border-active transition-all cursor-pointer">
-            <div class="fluent-gradient-border-active-inner p-4 sm:p-5 flex items-center gap-4">
+            <div class="fluent-gradient-border-active-inner p-3.5 sm:p-4 flex items-center gap-4">
               <div class="fluent-circular-badge">
                 <i data-lucide="aperture" class="w-5 h-5 text-white"></i>
               </div>
-              <div class="flex-1">
-                <h3 class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Focus Order</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Hardware-accelerated sequential keyboard focus ring governance</p>
-              </div>
-              <span class="text-xs font-mono text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">ACTIVE</span>
+              <span class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Focus Order</span>
             </div>
           </div>
 
           <!-- Card 2: A11y Color Contrast Checker -->
-          <div class="p-4 sm:p-5 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
+          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
             <div class="fluent-circular-badge">
               <i data-lucide="contrast" class="w-5 h-5 text-white"></i>
             </div>
-            <div class="flex-1">
-              <h3 class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Color Contrast Checker</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Luminance ratio verification exceeding 4.5:1 on dark OLED canvas</p>
-            </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Color Contrast Checker</span>
           </div>
 
           <!-- Card 3: Content Reel -->
-          <div class="p-4 sm:p-5 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
+          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
             <div class="fluent-circular-badge">
-              <i data-lucide="layout-grid" class="w-5 h-5 text-white"></i>
+              <!-- Content reel 4-circle vector -->
+              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="6" r="2.5"/>
+                <circle cx="12" cy="18" r="2.5"/>
+                <circle cx="6" cy="12" r="2.5"/>
+                <circle cx="18" cy="12" r="2.5"/>
+              </svg>
             </div>
-            <div class="flex-1">
-              <h3 class="text-sm sm:text-base font-semibold text-white tracking-tight">Content Reel</h3>
-              <p class="text-xs text-slate-400 mt-0.5">High-throughput simulcast feed synchronization with JST/WIB clock</p>
-            </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">Content Reel</span>
           </div>
 
           <!-- Card 4: Icon Scaling Tool -->
-          <div class="p-4 sm:p-5 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
+          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
             <div class="fluent-circular-badge">
               <i data-lucide="pen-tool" class="w-5 h-5 text-white"></i>
             </div>
-            <div class="flex-1">
-              <h3 class="text-sm sm:text-base font-semibold text-white tracking-tight">Icon Scaling Tool</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Sub-pixel SVG rendering without layout shift or rasterization artifacts</p>
-            </div>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">Icon Scaling Tool</span>
           </div>
 
         </div>
@@ -1790,6 +1802,10 @@
         toggleCommandPalette();
       } else if (e.key === 'Escape') {
         closeCommandPalette();
+        if (typeof closeEmployeeSignInModal === 'function') closeEmployeeSignInModal();
+        if (typeof closeFeedbackModal === 'function') closeFeedbackModal();
+        const compMenu = document.getElementById('comparisonDropdownMenu');
+        if (compMenu) compMenu.classList.add('hidden');
       }
     });
 
@@ -1853,11 +1869,19 @@
   </script>
 
   
+  <!-- DOCKED FEEDBACK PILL (SCREENSHOT 1 FAITHFUL REPRODUCTION) -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-8 flex justify-end mt-12 mb-3">
+    <button id="fluentFeedbackPillBtn" onclick="openFeedbackModal()" class="fluent-feedback-pill">
+      <span>Feedback</span>
+      <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+    </button>
+  </div>
+
   <!-- ========================================================================= -->
   <!-- MICROSOFT FLUENT 2 DARK FOOTER & DESIGN SYSTEM LINKS                      -->
   <!-- ========================================================================= -->
-  <footer id="fluentFooter" class="border-t border-white/10 bg-[#080c14] text-slate-400 text-xs font-sans mt-12 py-10 px-4 sm:px-8">
-    <div class="max-w-7xl mx-auto space-y-8">
+  <footer id="fluentFooter" class="border-t border-white/10 bg-[#080c14] text-slate-400 text-xs font-sans py-10 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto space-y-6">
       
       <div class="flex items-center gap-3">
         <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none">
@@ -1869,40 +1893,12 @@
         <span class="text-white font-bold text-sm tracking-tight">Microsoft Fluent 2 & Milkglass Architecture</span>
       </div>
 
-      <!-- Footer Navigation Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
-        <div class="space-y-2">
-          <h4 class="text-white font-semibold text-xs tracking-wide uppercase">Fluent 1</h4>
-          <ul class="space-y-1.5 text-slate-400">
-            <li><a href="#" class="hover:text-white transition-colors">Legacy Fabric</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Controls Catalog</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Acrylic Material</a></li>
-          </ul>
-        </div>
-        <div class="space-y-2">
-          <h4 class="text-white font-semibold text-xs tracking-wide uppercase">Microsoft Design</h4>
-          <ul class="space-y-1.5 text-slate-400">
-            <li><a href="#" class="hover:text-white transition-colors">Design Guidelines</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Design Tools</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Open Source Github</a></li>
-          </ul>
-        </div>
-        <div class="space-y-2">
-          <h4 class="text-white font-semibold text-xs tracking-wide uppercase">Inclusive Design</h4>
-          <ul class="space-y-1.5 text-slate-400">
-            <li><a href="#" class="hover:text-white transition-colors">Accessibility Principles</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Cognitive Load</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Focus Order Engine</a></li>
-          </ul>
-        </div>
-        <div class="space-y-2">
-          <h4 class="text-white font-semibold text-xs tracking-wide uppercase">Medium</h4>
-          <ul class="space-y-1.5 text-slate-400">
-            <li><a href="#" class="hover:text-white transition-colors">Engineering Journal</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Spatial UX Case Studies</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Telemetry Deep Dives</a></li>
-          </ul>
-        </div>
+      <!-- 4 Horizontal Links matching Screenshot 1 -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm font-semibold text-white">
+        <a href="#" class="hover:text-blue-400 transition-colors">Fluent 1</a>
+        <a href="#" class="hover:text-blue-400 transition-colors">Microsoft Design</a>
+        <a href="#" class="hover:text-blue-400 transition-colors">Inclusive Design</a>
+        <a href="#" class="hover:text-blue-400 transition-colors">Medium</a>
       </div>
 
       <!-- Bottom Micro Legal & Social Row -->
@@ -1932,17 +1928,11 @@
     </div>
   </footer>
 
-  <!-- FLUENT 2 FLOATING FEEDBACK PILL BUTTON -->
-  <button id="fluentFeedbackPillBtn" onclick="openFeedbackModal()" class="fluent-feedback-pill">
-    <span>Feedback</span>
-    <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
-  </button>
-
   <!-- ========================================================================= -->
   <!-- MODAL: MICROSOFT EMPLOYEE SINGLE SIGN-ON                                  -->
   <!-- ========================================================================= -->
   <div id="employeeSignInModal" class="hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
-    <div class="relative w-full max-w-md rounded-2xl bg-[#181d2a] border border-white/20 p-6 sm:p-8 shadow-2xl space-y-4">
+    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-[#181d2a] border border-white/20 p-6 sm:p-8 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <svg class="w-7 h-7" viewBox="0 0 21 21">
           <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
@@ -1984,7 +1974,7 @@
   <!-- MODAL: FLUENT 2 FEEDBACK SUBMISSION                                       -->
   <!-- ========================================================================= -->
   <div id="fluentFeedbackModal" class="hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
-    <div class="relative w-full max-w-md rounded-2xl bg-[#181d2a] border border-white/20 p-6 shadow-2xl space-y-4">
+    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-[#181d2a] border border-white/20 p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>

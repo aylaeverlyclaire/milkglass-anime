@@ -1831,3 +1831,14 @@ function openIntelligenceDossier() {
 function toggleThemeMode() {
   showCorporateToast('Dark High-Contrast Theme locked per Fluent 2 enterprise spec.');
 }
+
+// Close comparison dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const btn = document.getElementById('comparisonDropdownBtn');
+  const menu = document.getElementById('comparisonDropdownMenu');
+  if (menu && !menu.classList.contains('hidden')) {
+    if (!btn || (!btn.contains(e.target) && !menu.contains(e.target))) {
+      menu.classList.add('hidden');
+    }
+  }
+});

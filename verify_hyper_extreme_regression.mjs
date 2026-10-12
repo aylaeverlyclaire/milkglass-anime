@@ -248,6 +248,76 @@ async function runHyperExtremeRegressionStressTest() {
   }
   console.log("  PASS: Fluent 2 Floating Feedback Pill & Dark Footer Verified.");
 
+  // 1.7 Mobile Viewport (390x844) Regression Audit (Screen 1, 2, 3 Physical Mobile Parity)
+  console.log("\n Testing Mobile Viewport (390x844 OLED) Material Parity...");
+  await sendCommand('Emulation.setDeviceMetricsOverride', {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 3,
+    mobile: true
+  });
+  await sleep(300);
+
+  const mobileAudit = await evalJs(`
+    ({
+      fluentLogoVisible: document.querySelector('header svg rect[fill="#0078d4"]')?.getBoundingClientRect().width > 0,
+      fluentTextVisible: !!Array.from(document.querySelectorAll('header span')).find(s => s.innerText.trim() === 'Fluent 2' && s.offsetWidth > 0),
+      themeToggleVisible: document.getElementById('themeToggleBtn')?.offsetWidth > 0,
+      employeeBtnVisible: document.getElementById('employeeSignInBtn')?.offsetWidth > 0,
+      employeeTextVisible: !!Array.from(document.querySelectorAll('#employeeSignInBtn span')).find(s => s.innerText.includes('Employee sign-in') && s.offsetWidth > 0),
+      comparisonGridColumns: window.getComputedStyle(document.querySelector('#appleComparisonSection .grid')).gridTemplateColumns.split(' ').length,
+      intelligenceIsRow: window.getComputedStyle(document.querySelector('#appleIntelligenceSection .flex-row')).flexDirection === 'row',
+      intelligenceHasXScroll: window.getComputedStyle(document.querySelector('#appleIntelligenceSection .flex-row')).overflowX === 'auto',
+      circularBadgeHasZIndex: parseInt(window.getComputedStyle(document.querySelector('.fluent-circular-badge > *')).zIndex, 10) >= 1
+    })
+  `);
+  console.log(" Mobile Viewport Audit (390x844):", mobileAudit);
+  if (!mobileAudit.fluentLogoVisible || !mobileAudit.fluentTextVisible) {
+    throw new Error("Fluent 2 branding or text hidden on mobile viewport!");
+  }
+  if (!mobileAudit.themeToggleVisible) {
+    throw new Error("Theme toggle pill hidden on mobile viewport!");
+  }
+  if (!mobileAudit.employeeBtnVisible || !mobileAudit.employeeTextVisible) {
+    throw new Error("Employee sign-in button or text hidden on mobile viewport!");
+  }
+  if (mobileAudit.comparisonGridColumns !== 2) {
+    throw new Error("Apple Comparison grid must be 2 columns on mobile, found " + mobileAudit.comparisonGridColumns);
+  }
+  if (!mobileAudit.intelligenceIsRow || !mobileAudit.intelligenceHasXScroll) {
+    throw new Error("Apple Intelligence carousel must be horizontal row with overflow-x auto on mobile!");
+  }
+  if (!mobileAudit.circularBadgeHasZIndex) {
+    throw new Error("Circular badge child icon must have z-index >= 1 to prevent mask occlusion!");
+  }
+  console.log("  PASS: Mobile Viewport 390x844 100% Verified (Fluent 2 Chrome, 2x2 Grid, & Swipe Carousel).");
+
+  // 1.8 Accessibility & Interaction Physics Audit
+  console.log("\n Testing Interaction Physics & Dismissal Accessibility...");
+  // Test outside-click dismiss for comparison dropdown
+  await evalJs(`toggleComparisonDropdown()`);
+  await sleep(150);
+  const dropdownIsOpen = await evalJs(`!document.getElementById('comparisonDropdownMenu').classList.contains('hidden')`);
+  if (!dropdownIsOpen) throw new Error("Comparison dropdown did not open!");
+  await evalJs(`document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }))`);
+  await sleep(200);
+  const dropdownIsClosed = await evalJs(`document.getElementById('comparisonDropdownMenu').classList.contains('hidden')`);
+  if (!dropdownIsClosed) throw new Error("Comparison dropdown failed to close on outside click!");
+  console.log("  PASS: Dropdown outside-click auto-dismiss operational.");
+
+  // Test Escape key dismissal for Employee Modal
+  await evalJs(`openEmployeeSignInModal()`);
+  await sleep(150);
+  await evalJs(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
+  await sleep(200);
+  const empModalClosedOnEsc = await evalJs(`document.getElementById('employeeSignInModal').classList.contains('hidden')`);
+  if (!empModalClosedOnEsc) throw new Error("Employee modal failed to close on Escape key!");
+  console.log("  PASS: Modal Escape key dismissal operational.");
+
+  // Restore Desktop Viewport
+  await sendCommand('Emulation.clearDeviceMetricsOverride');
+  await sleep(200);
+
   // ---------------------------------------------------------------------------
   // SUITE 2: GPU COMPOSITING BUDGET & PERFORMANCE GOVERNANCE
   // ---------------------------------------------------------------------------
