@@ -1655,21 +1655,11 @@
       const views = ['Console', 'Radar', 'Catalog', 'Vault', 'Network'];
       views.forEach(v => {
         const el = document.getElementById('view' + v);
-        const navBtn = document.getElementById('navBtn' + v);
         if (el) {
           if (v.toLowerCase() === viewName.toLowerCase()) {
             el.classList.remove('hidden');
           } else {
             el.classList.add('hidden');
-          }
-        }
-        if (navBtn) {
-          if (v.toLowerCase() === viewName.toLowerCase()) {
-            navBtn.classList.add('bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/30');
-            navBtn.classList.remove('text-slate-300', 'hover:bg-white/5');
-          } else {
-            navBtn.classList.remove('bg-brand-600', 'text-white', 'shadow-md', 'shadow-brand-600/30');
-            navBtn.classList.add('text-slate-300', 'hover:bg-white/5');
           }
         }
       });
@@ -1687,9 +1677,12 @@
         e.preventDefault();
         toggleCommandPalette();
       } else if (e.key === 'Escape') {
-        closeCommandPalette();
-        if (typeof closeEmployeeSignInModal === 'function') closeEmployeeSignInModal();
-        if (typeof closeFeedbackModal === 'function') closeFeedbackModal();
+        if (typeof ModalManager !== 'undefined' && typeof ModalManager.closeTop === 'function') {
+          ModalManager.closeTop();
+        } else {
+          closeCommandPalette();
+          if (typeof closeFeedbackModal === 'function') closeFeedbackModal();
+        }
         const compMenu = document.getElementById('comparisonDropdownMenu');
         if (compMenu) compMenu.classList.add('hidden');
       }
@@ -1700,8 +1693,12 @@
       if (!modal) return;
       const isHidden = modal.classList.contains('hidden');
       if (isHidden) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        if (typeof ModalManager !== 'undefined') {
+          ModalManager.open('commandPaletteModal');
+        } else {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
         const input = document.getElementById('paletteSearchInput');
         if (input) {
           input.value = '';
@@ -1716,8 +1713,12 @@
     function closeCommandPalette() {
       const modal = document.getElementById('commandPaletteModal');
       if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        if (typeof ModalManager !== 'undefined') {
+          ModalManager.close('commandPaletteModal');
+        } else {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
       }
     }
 
@@ -1814,47 +1815,6 @@
     </div>
   </footer>
 
-  <!-- ========================================================================= -->
-  <!-- MODAL: MICROSOFT EMPLOYEE SINGLE SIGN-ON                                  -->
-  <!-- ========================================================================= -->
-  <div id="employeeSignInModal" class="hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
-    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-[#181d2a] border border-white/20 p-6 sm:p-8 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between">
-        <svg class="w-7 h-7" viewBox="0 0 21 21">
-          <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-          <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-          <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-          <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-        </svg>
-        <button onclick="closeEmployeeSignInModal()" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <div class="space-y-1">
-        <h3 class="text-lg font-bold text-white font-sans">Sign in</h3>
-        <p class="text-xs text-slate-400">to continue to Microsoft Fluent 2 & Milkglass Media Enterprise</p>
-      </div>
-
-      <div class="space-y-3 pt-2">
-        <input 
-          type="email" 
-          placeholder="Email, phone, or Skype" 
-          class="w-full bg-black/40 border border-white/20 text-xs rounded-xl px-3.5 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-        >
-        <p class="text-[11px] text-slate-400">No account? <a href="#" class="text-blue-400 hover:underline">Create one!</a></p>
-      </div>
-
-      <div class="flex items-center justify-between pt-4 border-t border-white/10">
-        <button onclick="closeEmployeeSignInModal()" class="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold">
-          Cancel
-        </button>
-        <button onclick="closeEmployeeSignInModal(); showCorporateToast('Single sign-on telemetry verified. Welcome back.');" class="px-5 py-1.5 rounded-xl bg-[#0067b8] hover:bg-[#005da6] text-white text-xs font-bold transition-all shadow">
-          Next
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- ========================================================================= -->
   <!-- MODAL: FLUENT 2 FEEDBACK SUBMISSION                                       -->

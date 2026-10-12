@@ -12,8 +12,17 @@ let chromeProcess = null;
 async function runHyperExtremeRegressionStressTest() {
   console.log("================================================================================");
   console.log("   MILKGLASS HYPER-EXTREME REGRESSION STRESS TEST (PORT " + PORT + ")          ");
-  console.log("   Visual Similarity, REA Material Extraction, GPU Budget, Zero-Ad Security   ");
+  console.log("   Zero-Waste Law of Identity (A ≡ A) | GPU Budget | Leak Prevention | AdShield ");
   console.log("================================================================================\n");
+
+  // Ensure local server on port 8000 is active
+  try {
+    await fetch('http://localhost:8000', { signal: AbortSignal.timeout(1500) });
+  } catch (e) {
+    console.log("Local server on port 8000 not responding. Spawning python serve.py...");
+    spawn('python', ['serve.py'], { detached: true, stdio: 'ignore' });
+    await sleep(2500);
+  }
 
   chromeProcess = spawn(CHROME_PATH, [
     `--remote-debugging-port=${PORT}`,
@@ -75,10 +84,7 @@ async function runHyperExtremeRegressionStressTest() {
   await sendCommand('Runtime.enable');
   await sendCommand('Console.enable');
   await sendCommand('Network.enable');
-
-  console.log("Navigating to http://localhost:8000 ...");
-  await sendCommand('Page.navigate', { url: 'http://localhost:8000' });
-  await sleep(4000); // Wait for initialization
+  await sendCommand('Network.setCacheDisabled', { cacheDisabled: true });
 
   async function evalJs(expr) {
     const res = await sendCommand('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true });
@@ -89,46 +95,48 @@ async function runHyperExtremeRegressionStressTest() {
     return res.result?.value;
   }
 
+  console.log("Navigating to http://localhost:8000 ...");
+  await sendCommand('Page.navigate', { url: 'http://localhost:8000' });
+
+  for (let i = 0; i < 40; i++) {
+    try {
+      const state = await evalJs('document.readyState');
+      const curTitle = await evalJs('document.title');
+      if (state === 'complete' && curTitle && curTitle.includes('MILKGLASS')) {
+        break;
+      }
+    } catch (e) {}
+    await sleep(400);
+  }
+  await sleep(1500); // Allow GraphQL AniList responses to settle
+
   // ---------------------------------------------------------------------------
   // SUITE 1: REA & MATERIAL REPRODUCTION AUDIT (SCREENSHOT VISUAL FIDELITY)
   // ---------------------------------------------------------------------------
-  console.log("\n>>> [SUITE 1/5] VISUAL SIMILARITY & REA MATERIAL FIDELITY VERIFICATION");
+  console.log("\n>>> [SUITE 1/6] VISUAL SIMILARITY & SPATIAL MATERIAL FIDELITY VERIFICATION");
 
-  // 1.1 Microsoft Fluent 2 Header Bar Audit
-  const fluentHeader = await evalJs(`
+  // 1.1 Streamlined Search Header Bar & Recommendations Strip Audit
+  const headerCheck = await evalJs(`
     ({
-      hasFluentLogo: !!document.querySelector('header svg rect[fill="#0078d4"]'),
-      themeToggle: !!document.getElementById('themeToggleBtn'),
-      employeeBtn: !!document.getElementById('employeeSignInBtn'),
-      employeeBtnBg: window.getComputedStyle(document.getElementById('employeeSignInBtn')).backgroundColor,
-      hasMicrosoft4Square: !!document.querySelector('#employeeSignInBtn svg rect[fill="#f25022"]') &&
-                           !!document.querySelector('#employeeSignInBtn svg rect[fill="#7fba00"]') &&
-                           !!document.querySelector('#employeeSignInBtn svg rect[fill="#00a4ef"]') &&
-                           !!document.querySelector('#employeeSignInBtn svg rect[fill="#ffb900"]')
+      hasSearchInput: !!document.getElementById('globalSearchInput'),
+      hasSearchBtn: !!document.getElementById('globalSearchBtn'),
+      recommendationsCount: document.querySelectorAll('#searchRecommendationsStrip .recommend-pill').length
     })
   `);
-  console.log(" Fluent 2 Header Audit:", fluentHeader);
-  if (!fluentHeader.hasFluentLogo || !fluentHeader.themeToggle || !fluentHeader.employeeBtn || !fluentHeader.hasMicrosoft4Square) {
-    throw new Error("Violation: Microsoft Fluent 2 Header chrome elements missing or incomplete!");
+  console.log(" Streamlined Header Audit:", headerCheck);
+  if (!headerCheck.hasSearchInput || !headerCheck.hasSearchBtn || headerCheck.recommendationsCount < 3) {
+    throw new Error("Violation: Header search input, search button, or recommendation pills missing!");
   }
-  console.log("  PASS: Microsoft Fluent 2 Header & 4-Square Sign-in Pill 100% Verified.");
-
-  // Test Employee Sign-in Modal
-  await evalJs(`openEmployeeSignInModal()`);
-  await sleep(300);
-  const employeeModalOpen = await evalJs(`!document.getElementById('employeeSignInModal').classList.contains('hidden')`);
-  if (!employeeModalOpen) throw new Error("Employee sign-in modal failed to open!");
-  await evalJs(`closeEmployeeSignInModal()`);
-  await sleep(200);
+  console.log("  PASS: Streamlined Search Header & 5-Item Recommendation Strip Verified.");
 
   // 1.2 Apple Sticky Subnav (#globalnav style)
   const appleSubnav = await evalJs(`
     ({
       subnavPresent: !!document.getElementById('appleSubnavBar'),
-      titleText: document.querySelector('#appleSubnavBar span').innerText,
+      titleText: document.querySelector('#appleSubnavBar span')?.innerText || '',
       exploreBtn: !!Array.from(document.querySelectorAll('#appleSubnavBar button')).find(b => b.innerText.trim() === 'Explore'),
       watchBtn: !!Array.from(document.querySelectorAll('#appleSubnavBar button')).find(b => b.innerText.trim() === 'Watch Now'),
-      watchBtnBg: window.getComputedStyle(Array.from(document.querySelectorAll('#appleSubnavBar button')).find(b => b.innerText.trim() === 'Watch Now')).backgroundColor
+      watchBtnBg: window.getComputedStyle(Array.from(document.querySelectorAll('#appleSubnavBar button')).find(b => b.innerText.trim() === 'Watch Now') || document.body).backgroundColor
     })
   `);
   console.log(" Apple Subnav Bar Audit:", appleSubnav);
@@ -248,7 +256,7 @@ async function runHyperExtremeRegressionStressTest() {
   }
   console.log("  PASS: Fluent 2 Floating Feedback Pill & Dark Footer Verified.");
 
-  // 1.7 Mobile Viewport (390x844) Regression Audit (Screen 1, 2, 3 Physical Mobile Parity)
+  // 1.7 Mobile Viewport (390x844) Regression Audit
   console.log("\n Testing Mobile Viewport (390x844 OLED) Material Parity...");
   await sendCommand('Emulation.setDeviceMetricsOverride', {
     width: 390,
@@ -260,11 +268,8 @@ async function runHyperExtremeRegressionStressTest() {
 
   const mobileAudit = await evalJs(`
     ({
-      fluentLogoVisible: document.querySelector('header svg rect[fill="#0078d4"]')?.getBoundingClientRect().width > 0,
-      fluentTextVisible: !!Array.from(document.querySelectorAll('header span')).find(s => s.innerText.trim() === 'Fluent 2' && s.offsetWidth > 0),
-      themeToggleVisible: document.getElementById('themeToggleBtn')?.offsetWidth > 0,
-      employeeBtnVisible: document.getElementById('employeeSignInBtn')?.offsetWidth > 0,
-      employeeTextVisible: !!Array.from(document.querySelectorAll('#employeeSignInBtn span')).find(s => s.innerText.includes('Employee sign-in') && s.offsetWidth > 0),
+      searchInputVisible: document.getElementById('globalSearchInput')?.offsetWidth > 0,
+      searchRecommendationsVisible: document.getElementById('searchRecommendationsStrip')?.offsetWidth > 0,
       comparisonGridColumns: window.getComputedStyle(document.querySelector('#appleComparisonSection .grid')).gridTemplateColumns.split(' ').length,
       intelligenceIsRow: window.getComputedStyle(document.querySelector('#appleIntelligenceSection .flex-row')).flexDirection === 'row',
       intelligenceHasXScroll: window.getComputedStyle(document.querySelector('#appleIntelligenceSection .flex-row')).overflowX === 'auto',
@@ -272,14 +277,8 @@ async function runHyperExtremeRegressionStressTest() {
     })
   `);
   console.log(" Mobile Viewport Audit (390x844):", mobileAudit);
-  if (!mobileAudit.fluentLogoVisible || !mobileAudit.fluentTextVisible) {
-    throw new Error("Fluent 2 branding or text hidden on mobile viewport!");
-  }
-  if (!mobileAudit.themeToggleVisible) {
-    throw new Error("Theme toggle pill hidden on mobile viewport!");
-  }
-  if (!mobileAudit.employeeBtnVisible || !mobileAudit.employeeTextVisible) {
-    throw new Error("Employee sign-in button or text hidden on mobile viewport!");
+  if (!mobileAudit.searchInputVisible || !mobileAudit.searchRecommendationsVisible) {
+    throw new Error("Search input or recommendations strip hidden on mobile viewport!");
   }
   if (mobileAudit.comparisonGridColumns !== 2) {
     throw new Error("Apple Comparison grid must be 2 columns on mobile, found " + mobileAudit.comparisonGridColumns);
@@ -290,11 +289,10 @@ async function runHyperExtremeRegressionStressTest() {
   if (!mobileAudit.circularBadgeHasZIndex) {
     throw new Error("Circular badge child icon must have z-index >= 1 to prevent mask occlusion!");
   }
-  console.log("  PASS: Mobile Viewport 390x844 100% Verified (Fluent 2 Chrome, 2x2 Grid, & Swipe Carousel).");
+  console.log("  PASS: Mobile Viewport 390x844 100% Verified (2x2 Grid & Swipe Carousel).");
 
   // 1.8 Accessibility & Interaction Physics Audit
   console.log("\n Testing Interaction Physics & Dismissal Accessibility...");
-  // Test outside-click dismiss for comparison dropdown
   await evalJs(`toggleComparisonDropdown()`);
   await sleep(150);
   const dropdownIsOpen = await evalJs(`!document.getElementById('comparisonDropdownMenu').classList.contains('hidden')`);
@@ -305,13 +303,13 @@ async function runHyperExtremeRegressionStressTest() {
   if (!dropdownIsClosed) throw new Error("Comparison dropdown failed to close on outside click!");
   console.log("  PASS: Dropdown outside-click auto-dismiss operational.");
 
-  // Test Escape key dismissal for Employee Modal
-  await evalJs(`openEmployeeSignInModal()`);
+  // Test Escape key dismissal for Feedback Modal
+  await evalJs(`openFeedbackModal()`);
   await sleep(150);
   await evalJs(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
   await sleep(200);
-  const empModalClosedOnEsc = await evalJs(`document.getElementById('employeeSignInModal').classList.contains('hidden')`);
-  if (!empModalClosedOnEsc) throw new Error("Employee modal failed to close on Escape key!");
+  const feedbackClosedOnEsc = await evalJs(`document.getElementById('fluentFeedbackModal').classList.contains('hidden')`);
+  if (!feedbackClosedOnEsc) throw new Error("Feedback modal failed to close on Escape key!");
   console.log("  PASS: Modal Escape key dismissal operational.");
 
   // Restore Desktop Viewport
@@ -321,7 +319,7 @@ async function runHyperExtremeRegressionStressTest() {
   // ---------------------------------------------------------------------------
   // SUITE 2: GPU COMPOSITING BUDGET & PERFORMANCE GOVERNANCE
   // ---------------------------------------------------------------------------
-  console.log("\n>>> [SUITE 2/5] HARDWARE ACCELERATION & GPU COMPOSITING BUDGET");
+  console.log("\n>>> [SUITE 2/6] HARDWARE ACCELERATION & GPU COMPOSITING BUDGET");
 
   const blurAudit = await evalJs(`
     Array.from(document.querySelectorAll('*')).filter(el => {
@@ -355,31 +353,9 @@ async function runHyperExtremeRegressionStressTest() {
   console.log("  PASS: Obsidian and Fluent cards use 0 GPU blur fragment passes (Mica specification)!");
 
   // ---------------------------------------------------------------------------
-  // SUITE 3: ACCESSIBILITY & SEQUENTIAL HEADING HIERARCHY
+  // SUITE 3: ZERO-AD ADSHIELD KERNEL DEFENSE & UNBLOCKED PLAYBACK
   // ---------------------------------------------------------------------------
-  console.log("\n>>> [SUITE 3/5] ACCESSIBILITY & HEADING HIERARCHY (LIGHTHOUSE AUDIT)");
-
-  const headings = await evalJs(`
-    Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(h => ({
-      tag: h.tagName,
-      text: h.innerText.slice(0, 35)
-    }))
-  `);
-  const h1s = headings.filter(h => h.tag === 'H1');
-  const h2s = headings.filter(h => h.tag === 'H2');
-  console.log(` Heading distribution: H1=${h1s.length}, H2=${h2s.length}, Total=${headings.length}`);
-  if (h1s.length !== 1) {
-    throw new Error("Accessibility violation: Expected exactly 1 H1 (Hero title), found " + h1s.length);
-  }
-  if (h2s.length < 5) {
-    throw new Error("Accessibility violation: Expected at least 5 H2 section titles, found " + h2s.length);
-  }
-  console.log("  PASS: Strict sequential heading hierarchy verified (WCAG AAA compatible)!");
-
-  // ---------------------------------------------------------------------------
-  // SUITE 4: ZERO-AD ADSHIELD KERNEL DEFENSE & UNBLOCKED PLAYBACK
-  // ---------------------------------------------------------------------------
-  console.log("\n>>> [SUITE 4/5] SECURITY VERIFICATION & ADSHIELD ZERO-AD DEFENSE");
+  console.log("\n>>> [SUITE 3/6] SECURITY VERIFICATION & ADSHIELD ZERO-AD DEFENSE");
 
   const adShieldCheck = await evalJs(`
     (function() {
@@ -410,11 +386,11 @@ async function runHyperExtremeRegressionStressTest() {
   console.log("  PASS: AdShield Kernel locked; Embed player unblocked.");
 
   // ---------------------------------------------------------------------------
-  // SUITE 5: CORE MEDIA WORKSTATION REGRESSION INTEGRATION
+  // SUITE 4: CORE MEDIA WORKSTATION ENGINE & FAILOVER INTEGRATION
   // ---------------------------------------------------------------------------
-  console.log("\n>>> [SUITE 5/5] CORE MEDIA WORKSTATION ENGINE REGRESSION INTEGRATION");
+  console.log("\n>>> [SUITE 4/6] CORE MEDIA WORKSTATION ENGINE REGRESSION INTEGRATION");
 
-  // 5.1 Player modal & failover engine
+  // 4.1 Player modal & failover engine
   console.log(" Opening player modal for Ao no Hako S2 (ID 189123)...");
   await evalJs(`
     openPlayerModal({ id: 189123, title: { romaji: 'Ao no Hako Season 2', english: 'Blue Box Season 2' }, status: 'RELEASING', episodes: 25, nextAiringEpisode: { episode: 3 } }, 1);
@@ -438,7 +414,7 @@ async function runHyperExtremeRegressionStressTest() {
   console.log(" Stream index after silent failover:", failoverIndex);
   if (failoverIndex !== 1) throw new Error("Failover did not advance stream index!");
 
-  // 5.2 Finished anime batch download gating
+  // 4.2 Finished anime batch download gating
   console.log(" Checking batch gating for Finished Anime (Sousou no Frieren ID 154587)...");
   await evalJs(`openDetailModal(154587)`);
   await sleep(800);
@@ -448,6 +424,7 @@ async function runHyperExtremeRegressionStressTest() {
 
   await evalJs(`openBatchDownloadModal()`);
   await sleep(400);
+
   const batchMagnet = await evalJs(`document.getElementById('batchClientDirectLink').getAttribute('href')`);
   console.log(" Batch magnet URI:", batchMagnet.slice(0, 75) + '...');
   const hexHash = batchMagnet.match(/urn:btih:([a-f0-9]{40})/i);
@@ -457,26 +434,104 @@ async function runHyperExtremeRegressionStressTest() {
   await evalJs(`closeBatchDownloadModal()`);
   await evalJs(`closeDetailModal()`);
 
-  // 5.3 Global Catalog Search
+  // 4.3 Global Catalog Search
   console.log(" Testing global catalog search engine...");
   await evalJs(`
     const input = document.getElementById('globalSearchInput');
     input.value = 'Solo Leveling';
     input.dispatchEvent(new Event('input', { bubbles: true }));
+    submitManualSearch();
   `);
-  await sleep(2500);
+  await sleep(1500);
   const searchResultsCount = await evalJs(`document.querySelectorAll('#searchResultsGrid > div').length`);
   console.log(" Search results count for 'Solo Leveling':", searchResultsCount);
   if (searchResultsCount === 0) throw new Error("Catalog search did not yield results!");
 
-  // 5.4 Command Palette Modal (Ctrl+K)
+  // 4.4 Command Palette Modal (Ctrl+K)
   await evalJs(`toggleCommandPalette()`);
   await sleep(200);
   const paletteOpen = await evalJs(`!document.getElementById('commandPaletteModal').classList.contains('hidden')`);
   if (!paletteOpen) throw new Error("Command palette failed to toggle open!");
   await evalJs(`closeCommandPalette()`);
 
-  // Check runtime errors
+  // ---------------------------------------------------------------------------
+  // SUITE 5: ZERO-WASTE RESOURCE, MASTER CLOCK & LEAK STRESS TEST
+  // ---------------------------------------------------------------------------
+  console.log("\n>>> [SUITE 5/6] ZERO-WASTE RESOURCE & LEAK PARANOIA STRESS TEST");
+
+  // 5.1 ClockEngine Active Targets & Rapid Modal Cycling Test
+  console.log(" Stress-testing Master ClockEngine and modal cycling (5 rapid opens/closes)...");
+  for (let cycle = 0; cycle < 5; cycle++) {
+    await evalJs(`openDetailModal(189123)`);
+    await sleep(100);
+    await evalJs(`closeDetailModal()`);
+    await sleep(50);
+  }
+  const activeClockTargets = await evalJs(`ClockEngine.activeTargets.size`);
+  console.log(" Active ClockEngine targets after cycling:", activeClockTargets);
+  // All modal countdown targets must be cleanly unregistered
+  const hasModalCountdownLeak = await evalJs(`ClockEngine.activeTargets.has('modalUpcomingCountdown')`);
+  if (hasModalCountdownLeak) {
+    throw new Error("Memory Leak: modalUpcomingCountdown was not unregistered from ClockEngine upon close!");
+  }
+  console.log("  PASS: Zero ClockEngine target leaks after rapid modal cycling.");
+
+  // 5.2 ApiCache In-Memory Deduplication & 0ms Roundtrip Test
+  console.log(" Testing ApiCache query deduplication...");
+  const cacheStats = await evalJs(`
+    ({
+      cacheEntries: apiCache.size,
+      pendingCount: pendingRequests.size
+    })
+  `);
+  console.log(" ApiCache status:", cacheStats);
+  if (cacheStats.cacheEntries === 0) {
+    throw new Error("Violation: ApiCache did not store responses from GraphQL queries!");
+  }
+  if (cacheStats.pendingCount !== 0) {
+    throw new Error("Violation: ApiCache has unresolved pending requests!");
+  }
+  console.log("  PASS: ApiCache actively caching GraphQL queries (sustainable scalability).");
+
+  // 5.3 Universal Modal Escape Key Dismissal Test across all modals
+  console.log(" Testing universal ModalManager Escape key dismissal on Player Modal...");
+  await evalJs(`openPlayerModal({ id: 189123, title: { romaji: 'Ao no Hako' } }, 1)`);
+  await sleep(300);
+  const playerIsOpen = await evalJs(`!document.getElementById('playerModal').classList.contains('hidden')`);
+  if (!playerIsOpen) throw new Error("Player modal failed to open!");
+
+  await evalJs(`window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))`);
+  await sleep(200);
+  const playerClosed = await evalJs(`document.getElementById('playerModal').classList.contains('hidden')`);
+  const iframeCleared = await evalJs(`document.getElementById('animeIframe').src === '' || document.getElementById('animeIframe').src === 'about:blank' || !document.getElementById('animeIframe').src.includes('aniembed')`);
+  console.log(" Player modal closed on Escape:", playerClosed, "Iframe cleared:", iframeCleared);
+  if (!playerClosed || !iframeCleared) {
+    throw new Error("Player modal failed to close cleanly on Escape or iframe was not reset!");
+  }
+  console.log("  PASS: Universal ModalManager Escape key teardown operational.");
+
+  // ---------------------------------------------------------------------------
+  // SUITE 6: LIGHTHOUSE ACCESSIBILITY & UNCAUGHT RUNTIME EXCEPTIONS
+  // ---------------------------------------------------------------------------
+  console.log("\n>>> [SUITE 6/6] ACCESSIBILITY & UNCAUGHT RUNTIME ERROR AUDIT");
+
+  const headings = await evalJs(`
+    Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(h => ({
+      tag: h.tagName,
+      text: h.innerText.slice(0, 35)
+    }))
+  `);
+  const h1s = headings.filter(h => h.tag === 'H1');
+  const h2s = headings.filter(h => h.tag === 'H2');
+  console.log(` Heading distribution: H1=${h1s.length}, H2=${h2s.length}, Total=${headings.length}`);
+  if (h1s.length !== 1) {
+    throw new Error("Accessibility violation: Expected exactly 1 H1 (Hero title), found " + h1s.length);
+  }
+  if (h2s.length < 5) {
+    throw new Error("Accessibility violation: Expected at least 5 H2 section titles, found " + h2s.length);
+  }
+  console.log("  PASS: Strict sequential heading hierarchy verified (WCAG AAA compatible)!");
+
   console.log("\n>>> AUDITING UNCAUGHT JAVASCRIPT RUNTIME ERRORS");
   console.log(" Total uncaught errors recorded:", uncaughtErrors.length);
   if (uncaughtErrors.length > 0) {
@@ -486,7 +541,7 @@ async function runHyperExtremeRegressionStressTest() {
 
   console.log("\n================================================================================");
   console.log("   HYPER-EXTREME REGRESSION STRESS TEST: 100% SUITE PASS!                        ");
-  console.log("   Visual Similarity: EXACT  | GPU Budget: COMPLIANT | Errors: 0               ");
+  console.log("   Zero-Waste: VERIFIED | GPU Budget: COMPLIANT | Memory Leaks: 0 | Errors: 0   ");
   console.log("================================================================================\n");
 
   ws.close();

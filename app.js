@@ -2,8 +2,12 @@
  * MILKGLASS ENTERPRISE MEDIA ENGINE v4.0
  * High-Concurrency Digital Media Delivery & Federated Multi-CDN Engine
  * Strict Isolated Sandbox | Enterprise Telemetry Governance | Active Silent Failover
+ * Zero-Waste Architecture & Law of Identity (A ≡ A) Standard
  */
 
+// ==============================================================================
+// 0. SINGLE SOURCE OF TRUTH (STATE & ENGINES)
+// ==============================================================================
 let artPlayerInstance = null;
 let currentAnimeData = null;
 let currentSelectedEpisode = 1;
@@ -15,12 +19,156 @@ if (currentSubtitlePref !== 'id' && currentSubtitlePref !== 'en') {
 let upcomingTickerInterval = null;
 let countdownTimers = [];
 
-// Multi-CDN Provider Runtime State
-let currentProviderIndex = 0;
 let failoverTimeoutId = null;
 let failoverBannerTimeoutId = null;
 let currentDownloadResolution = '1080p';
 let currentBatchResolution = '1080p';
+
+// In-Memory API Cache & In-flight Deduplication (Strict Zero-Waste Network Guarantee)
+const apiCache = new Map();
+const pendingRequests = new Map();
+const API_CACHE_TTL = 300000; // 5 minutes cache TTL
+
+// Unified Master Clock Engine (Consolidates all countdown timers to 1 tick per second)
+const ClockEngine = {
+  activeTargets: new Map(), // id -> { getTargetSecs: () => number, onTick: (remaining, el) => void }
+  timerId: null,
+
+  register(id, getTargetSecs, onTick) {
+    this.activeTargets.set(id, { getTargetSecs, onTick });
+    this.ensureRunning();
+    this.tickTarget(id);
+  },
+
+  unregister(id) {
+    this.activeTargets.delete(id);
+    if (this.activeTargets.size === 0) {
+      this.stop();
+    }
+  },
+
+  clearAiring() {
+    for (const id of Array.from(this.activeTargets.keys())) {
+      if (id.startsWith('timer-')) {
+        this.activeTargets.delete(id);
+      }
+    }
+    if (this.activeTargets.size === 0) {
+      this.stop();
+    }
+  },
+
+  tickTarget(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+      this.activeTargets.delete(id);
+      return;
+    }
+    const item = this.activeTargets.get(id);
+    if (!item) return;
+    const nowSecs = Math.floor(Date.now() / 1000);
+    const remaining = item.getTargetSecs() - nowSecs;
+    item.onTick(remaining, el);
+  },
+
+  tick() {
+    if (document.hidden) return; // Zero-waste: suspend DOM churn when tab is hidden
+    for (const id of Array.from(this.activeTargets.keys())) {
+      this.tickTarget(id);
+    }
+    if (this.activeTargets.size === 0) {
+      this.stop();
+    }
+  },
+
+  ensureRunning() {
+    if (!this.timerId && this.activeTargets.size > 0) {
+      this.timerId = setInterval(() => this.tick(), 1000);
+    }
+  },
+
+  stop() {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+  }
+};
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    ClockEngine.tick(); // Instant catch-up tick when tab becomes visible
+  }
+});
+
+// Unified Modal Governance (Law of Identity A ≡ A)
+const ModalManager = {
+  activeStack: [],
+
+  open(modalId, onOpen) {
+    const el = document.getElementById(modalId);
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.classList.add('flex');
+    if (!this.activeStack.includes(modalId)) {
+      this.activeStack.push(modalId);
+    }
+    if (typeof onOpen === 'function') onOpen(el);
+  },
+
+  close(modalId, onClose) {
+    const el = document.getElementById(modalId);
+    if (el) {
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
+    this.activeStack = this.activeStack.filter(id => id !== modalId);
+    if (typeof onClose === 'function') onClose(el);
+  },
+
+  closeTop() {
+    if (this.activeStack.length === 0) {
+      const compMenu = document.getElementById('comparisonDropdownMenu');
+      if (compMenu && !compMenu.classList.contains('hidden')) {
+        compMenu.classList.add('hidden');
+        return true;
+      }
+      return false;
+    }
+    const topId = this.activeStack[this.activeStack.length - 1];
+    switch (topId) {
+      case 'playerModal':
+        closePlayerModal();
+        break;
+      case 'detailModal':
+        closeDetailModal();
+        break;
+      case 'batchDownloadModal':
+        closeBatchDownloadModal();
+        break;
+      case 'commandPaletteModal':
+        if (typeof closeCommandPalette === 'function') closeCommandPalette();
+        break;
+      case 'fluentFeedbackModal':
+        closeFeedbackModal();
+        break;
+      default:
+        this.close(topId);
+    }
+    return true;
+  }
+};
+
+window.ClockEngine = ClockEngine;
+window.apiCache = apiCache;
+window.pendingRequests = pendingRequests;
+window.ModalManager = ModalManager;
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    ModalManager.closeTop();
+  }
+});
 
 // ==============================================================================
 // 1. SMART AUTO-FAILOVER STREAM REGISTRY
@@ -80,25 +228,45 @@ function getStreamChain(anime, episodeNumber) {
 }
 
 // ==============================================================================
-// 2. ANILIST GRAPHQL CLIENT (ENTERPRISE API)
+// 2. ANILIST GRAPHQL CLIENT (ENTERPRISE API WITH LRU/TTL CACHE)
 // ==============================================================================
 
-async function fetchAniList(query, variables = {}) {
-  try {
-    const response = await fetch('https://graphql.anilist.co', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify({ query, variables })
-    });
-    const json = await response.json();
-    return json.data;
-  } catch (error) {
-    console.error('[Enterprise Engine] AniList GraphQL communication failure:', error);
-    return null;
+async function fetchAniList(query, variables = {}, ttlMs = API_CACHE_TTL) {
+  const cacheKey = JSON.stringify({ query: query.replace(/\s+/g, ' ').trim(), variables });
+  const cached = apiCache.get(cacheKey);
+  const now = Date.now();
+  if (cached && (now - cached.timestamp < ttlMs)) {
+    return cached.data;
   }
+  if (pendingRequests.has(cacheKey)) {
+    return pendingRequests.get(cacheKey);
+  }
+
+  const requestPromise = (async () => {
+    try {
+      const response = await fetch('https://graphql.anilist.co', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ query, variables })
+      });
+      const json = await response.json();
+      if (json && json.data) {
+        apiCache.set(cacheKey, { data: json.data, timestamp: Date.now() });
+      }
+      return json.data;
+    } catch (error) {
+      console.error('[Enterprise Engine] AniList GraphQL communication failure:', error);
+      return null;
+    } finally {
+      pendingRequests.delete(cacheKey);
+    }
+  })();
+
+  pendingRequests.set(cacheKey, requestPromise);
+  return requestPromise;
 }
 
 // ==============================================================================
@@ -472,6 +640,29 @@ let heroCarouselIndex = 0;
 let heroCarouselTimer = null;
 let isHeroTransitioning = false;
 
+function resetHeroCarouselTimer() {
+  if (heroCarouselTimer) {
+    clearInterval(heroCarouselTimer);
+    heroCarouselTimer = null;
+  }
+  if (!document.hidden && heroCarouselItems && heroCarouselItems.length > 1) {
+    heroCarouselTimer = setInterval(() => {
+      rotateHeroSlide(1);
+    }, 6000);
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (heroCarouselTimer) {
+      clearInterval(heroCarouselTimer);
+      heroCarouselTimer = null;
+    }
+  } else {
+    resetHeroCarouselTimer();
+  }
+});
+
 function initHeroCarousel(mediaList) {
   if (!mediaList || mediaList.length === 0) return;
   const ongoing = mediaList.filter(item => item.status === 'RELEASING' || (item.nextAiringEpisode && item.nextAiringEpisode.episode));
@@ -479,11 +670,7 @@ function initHeroCarousel(mediaList) {
   heroCarouselIndex = 0;
 
   applyHeroData(heroCarouselItems[0], false);
-
-  if (heroCarouselTimer) clearInterval(heroCarouselTimer);
-  heroCarouselTimer = setInterval(() => {
-    rotateHeroSlide(1);
-  }, 6000);
+  resetHeroCarouselTimer();
 }
 
 function rotateHeroSlide(direction = 1) {
@@ -580,10 +767,7 @@ function renderHeroDots() {
 
 function jumpHeroSlide(idx) {
   if (idx < 0 || idx >= heroCarouselItems.length || idx === heroCarouselIndex || isHeroTransitioning) return;
-  if (heroCarouselTimer) {
-    clearInterval(heroCarouselTimer);
-    heroCarouselTimer = setInterval(() => rotateHeroSlide(1), 6000);
-  }
+  resetHeroCarouselTimer();
   const heroContent = document.getElementById('heroContent');
   const heroBackdrop = document.getElementById('heroBackdrop');
   if (heroContent) {
@@ -602,10 +786,6 @@ function jumpHeroSlide(idx) {
     if (heroBackdrop) heroBackdrop.style.opacity = '1';
     setTimeout(() => { isHeroTransitioning = false; }, 300);
   }, 300);
-}
-
-function renderHeroSpotlight(anime) {
-  applyHeroData(anime, true);
 }
 
 async function loadWatchabilityTracker(trendingMedia) {
@@ -802,8 +982,7 @@ async function loadAiringCountdown() {
   if (!container || !data || !data.Page.airingSchedules) return;
   container.innerHTML = '';
 
-  countdownTimers.forEach(clearInterval);
-  countdownTimers = [];
+  ClockEngine.clearAiring();
 
   data.Page.airingSchedules.forEach((item, idx) => {
     const title = item.media.title.english || item.media.title.romaji;
@@ -833,12 +1012,7 @@ async function loadAiringCountdown() {
     `;
     container.appendChild(card);
 
-    function updateTimer() {
-      const currentNow = Math.floor(Date.now() / 1000);
-      const remainingSecs = targetTime - currentNow;
-      const el = document.getElementById(timerId);
-      if (!el) return;
-
+    ClockEngine.register(timerId, () => targetTime, (remainingSecs, el) => {
       if (remainingSecs <= 0) {
         el.innerText = "BROADCAST CONCLUDED (INGESTING)";
         el.className = "text-[10px] font-bold text-amber-300 animate-pulse font-mono";
@@ -848,11 +1022,7 @@ async function loadAiringCountdown() {
         const secs = remainingSecs % 60;
         el.innerText = `T-minus ${hrs}h ${mins}m ${secs}s`;
       }
-    }
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-    countdownTimers.push(interval);
+    });
   });
 }
 
@@ -1122,24 +1292,19 @@ async function openDetailModal(animeId) {
 
   // Upcoming Episode Ticker Banner
   const upcomingBanner = document.getElementById('modalUpcomingBanner');
+  ClockEngine.unregister('modalUpcomingCountdown');
   if (epInfo.nextEp && epInfo.nextAiringSeconds > 0) {
     upcomingBanner.classList.remove('hidden');
     upcomingBanner.classList.add('flex');
     document.getElementById('modalUpcomingText').innerText = `Episode ${epInfo.nextEp} in Japanese broadcast queue`;
 
-    function updateUpcomingTicker() {
-      const remaining = epInfo.nextAiringTimestamp - Math.floor(Date.now() / 1000);
-      const countdownEl = document.getElementById('modalUpcomingCountdown');
-      if (!countdownEl) return;
+    ClockEngine.register('modalUpcomingCountdown', () => epInfo.nextAiringTimestamp, (remaining, countdownEl) => {
       if (remaining <= 0) {
         countdownEl.innerText = "BROADCAST CONCLUDED (INGESTING)";
       } else {
         countdownEl.innerText = formatDuration(remaining);
       }
-    }
-
-    updateUpcomingTicker();
-    upcomingTickerInterval = setInterval(updateUpcomingTicker, 1000);
+    });
   } else {
     upcomingBanner.classList.add('hidden');
     upcomingBanner.classList.remove('flex');
@@ -1191,17 +1356,13 @@ async function openDetailModal(animeId) {
     }
   }
 
+  ModalManager.open('detailModal');
   if (window.lucide) lucide.createIcons();
 }
 
 function closeDetailModal() {
-  const modal = document.getElementById('detailModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  if (upcomingTickerInterval) {
-    clearInterval(upcomingTickerInterval);
-    upcomingTickerInterval = null;
-  }
+  ClockEngine.unregister('modalUpcomingCountdown');
+  ModalManager.close('detailModal');
 }
 
 // ==============================================================================
@@ -1218,9 +1379,7 @@ function openPlayerModal(anime, episodeNumber = 1) {
   const epInfo = calculateAnimeEpisodes(anime);
   currentMaxAiredEpisode = epInfo.airedCount || 1;
 
-  const modal = document.getElementById('playerModal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  ModalManager.open('playerModal');
 
   const title = anime.title ? (anime.title.english || anime.title.romaji) : (anime.name || 'Media Series');
   const subLangLabel = (currentSubtitlePref === 'id') ? 'Indonesian Subtitles' : 'Global / English Subtitles';
@@ -1391,9 +1550,7 @@ function closePlayerModal() {
   const iframe = document.getElementById('animeIframe');
   if (iframe) iframe.src = "";
 
-  const modal = document.getElementById('playerModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
+  ModalManager.close('playerModal');
 }
 
 function toggleDownloadPanel() {
@@ -1605,9 +1762,7 @@ function openBatchDownloadModal() {
     return;
   }
 
-  const modal = document.getElementById('batchDownloadModal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
+  ModalManager.open('batchDownloadModal');
 
   const title = currentAnimeData.title.english || currentAnimeData.title.romaji;
   const epInfo = calculateAnimeEpisodes(currentAnimeData);
@@ -1624,9 +1779,7 @@ function openBatchDownloadModal() {
 }
 
 function closeBatchDownloadModal() {
-  const modal = document.getElementById('batchDownloadModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
+  ModalManager.close('batchDownloadModal');
 }
 
 function switchBatchResolution(res) {
@@ -1849,7 +2002,6 @@ function showCorporateToast(message) {
 // 11. CONFIRMED SEARCH & 5-ITEM RECOMMENDATION ENGINE
 // ==============================================================================
 
-let searchDebounceTimeout = null;
 const fallbackSearchRecommendations = [
   'Solo Leveling',
   'Sousou no Frieren',
@@ -1983,10 +2135,7 @@ function setupSearchListeners() {
           } else {
             rotateHeroSlide(-1);
           }
-          if (heroCarouselTimer) {
-            clearInterval(heroCarouselTimer);
-            heroCarouselTimer = setInterval(() => rotateHeroSlide(1), 6000);
-          }
+          resetHeroCarouselTimer();
         }
       }
     }, { passive: true });
@@ -2035,20 +2184,11 @@ async function executeSearch(queryStr) {
   renderAnimeGrid('searchResultsGrid', data.Page.media);
 }
 
-function hashCode(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
-}
-
 // ==============================================================================
 // 12. INITIALIZATION
 // ==============================================================================
 
-window.addEventListener('DOMContentLoaded', () => {
+function initializeApp() {
   updateSubtitleUI();
   initHeroCarousel(FALLBACK_ONGOING_ANIME);
   loadHomeData();
@@ -2060,7 +2200,13 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (window.lucide) lucide.createIcons();
-});
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
 
 
 // ==============================================================================
@@ -2135,36 +2281,12 @@ function launchFeaturedStream() {
   if (playBtn) playBtn.click();
 }
 
-function openEmployeeSignInModal() {
-  const modal = document.getElementById('employeeSignInModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
-}
-
-function closeEmployeeSignInModal() {
-  const modal = document.getElementById('employeeSignInModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
-}
-
 function openFeedbackModal() {
-  const modal = document.getElementById('fluentFeedbackModal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
+  ModalManager.open('fluentFeedbackModal');
 }
 
 function closeFeedbackModal() {
-  const modal = document.getElementById('fluentFeedbackModal');
-  if (modal) {
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-  }
+  ModalManager.close('fluentFeedbackModal');
 }
 
 function submitFeedback() {
@@ -2174,10 +2296,6 @@ function submitFeedback() {
 
 function openIntelligenceDossier() {
   showCorporateToast('Opening Milkglass Intelligence System Architecture specification.');
-}
-
-function toggleThemeMode() {
-  showCorporateToast('Dark High-Contrast Theme locked per Fluent 2 enterprise spec.');
 }
 
 // Close comparison dropdown when clicking outside

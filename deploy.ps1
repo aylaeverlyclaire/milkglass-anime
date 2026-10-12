@@ -19,8 +19,13 @@ Write-Host "   MILKGLASS ZERO-COST EDGE CDN AUTO-DEPLOY PIPELINE            " -F
 Write-Host "=================================================================" -ForegroundColor Cyan
 
 # 1. Verification Guard
-Write-Host "`n[1/4] Running Pre-flight Quality & Security Checks..." -ForegroundColor Yellow
-if (Test-Path "verify_ids.js") {
+Write-Host "`n[1/4] Running Hyper-Extreme Quality, Regression & Security Pre-Flight Checks..." -ForegroundColor Yellow
+if (Test-Path "verify_hyper_extreme_regression.mjs") {
+  node verify_hyper_extreme_regression.mjs
+  if ($LASTEXITCODE -ne 0) {
+    Write-Error "Pre-flight regression verification failed! Aborting deployment."
+  }
+} elseif (Test-Path "verify_ids.js") {
   node verify_ids.js
   if ($LASTEXITCODE -ne 0) {
     Write-Error "Pre-flight verification failed! Aborting deployment."
