@@ -9,7 +9,7 @@
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
 
-  <!-- Typography: Inter & JetBrains Mono for Corporate Telemetry -->
+  <!-- Typography: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -89,7 +89,6 @@
       background-attachment: fixed;
     }
 
-    /* Master Apple & Fluent 2 Material Tokens */
     :root {
       --fluent-mica-bg: #0c1424;
       --fluent-mica-card: #0d1526;
@@ -98,8 +97,6 @@
       --apple-nav-bg: rgba(10, 16, 32, 0.82);
     }
 
-    /* Apple Liquid Glass Navigation Bridge (GPU-budgeted top-level chrome) */
-    .apple-glass-nav,
     .lqd-shell {
       background-color: var(--apple-nav-bg);
       backdrop-filter: saturate(180%) blur(20px);
@@ -109,14 +106,11 @@
         inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
         inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
         0 20px 48px -12px rgba(0, 0, 0, 0.70);
-      transform: translateZ(0); /* Hardware compositor promotion */
+      transform: translateZ(0);
     }
 
-    /* Microsoft Fluent 2 Solid & Mica Composite (Zero GPU Blur passes for 60fps on budget mobile) */
     .fluent-mica-card,
-    .lqd-card,
-    .liquid-glass-panel,
-    .liquid-glass-interactive {
+    .lqd-card {
       background-color: var(--fluent-mica-card);
       background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 100%);
       border: 1px solid var(--fluent-border);
@@ -126,12 +120,11 @@
         0 8px 20px -2px rgba(0, 0, 0, 0.38);
       transform: translateZ(0);
       will-change: transform, border-color, box-shadow;
-      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease;
     }
 
     .fluent-mica-card:hover,
-    .lqd-card:hover,
-    .liquid-glass-interactive:hover {
+    .lqd-card:hover {
       transform: translateY(-2.5px) translateZ(0);
       background-color: #111a30;
       border-color: var(--fluent-border-hover);
@@ -141,16 +134,10 @@
         0 0 20px 0 rgba(37, 99, 235, 0.15);
     }
 
-    .lqd-pill {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
     .specular-rim {
       box-shadow: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.28);
     }
 
-    /* Fluent 2 Smoke (Modal Dimmer) & Acrylic (Modal Sheet) */
     .fluent-smoke-backdrop {
       background-color: rgba(0, 0, 0, 0.80);
       backdrop-filter: blur(8px);
@@ -167,23 +154,7 @@
         0 32px 72px -12px rgba(0, 0, 0, 0.85);
     }
 
-    .liquid-glass-chrome {
-      background: rgba(10, 16, 32, 0.82);
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border-color: rgba(255, 255, 255, 0.14);
-      box-shadow: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.25), 0 20px 48px -8px rgba(0, 0, 0, 0.65);
-    }
-
-    .liquid-glass-subtle {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
-    }
-
-    /* Low-power & accessibility transparency fallbacks */
     @media (prefers-reduced-transparency: reduce) {
-      .apple-glass-nav,
       .fluent-acrylic-sheet,
       .fluent-smoke-backdrop,
       .lqd-shell {
@@ -191,12 +162,6 @@
         -webkit-backdrop-filter: none !important;
         background-color: #070b14 !important;
       }
-    }
-
-    /* Content Visibility Containment for 60fps scrolling */
-    #watchability, #trending, #countdown, #simulcast, #popular, #searchResultsSection, #vaultView, #networkView {
-      content-visibility: auto;
-      contain-intrinsic-size: 1px 350px;
     }
 
     .line-clamp-1 {
@@ -211,175 +176,11 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .line-clamp-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-  
-    /* Fluent 2 Specular Gradient Rim & Active Focus Border */
-    .fluent-gradient-border-active {
-      position: relative;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #ff8c00 0%, #ec4899 50%, #8b5cf6 100%);
-      padding: 2px;
-      box-shadow: 0 0 24px -4px rgba(255, 140, 0, 0.25), 0 0 36px -6px rgba(139, 92, 246, 0.25);
-    }
-    .fluent-gradient-border-active-inner {
-      background-color: #131722;
-      border-radius: 18px;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Fluent 2 Circular Icon Badge with Dual-Tone Gradient Outline */
-    .fluent-circular-badge {
-      width: 44px;
-      height: 44px;
-      border-radius: 9999px;
-      background: #10141e;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .fluent-circular-badge > * {
-      position: relative;
-      z-index: 2;
-    }
-    .fluent-circular-badge::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 9999px;
-      padding: 1.5px;
-      background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      z-index: 1;
-    }
-    @supports not (mask-composite: exclude) {
-      .fluent-circular-badge {
-        border: 1.5px solid #06b6d4;
-      }
-      .fluent-circular-badge::before {
-        display: none;
-      }
-    }
-
-    /* Apple Deep Obsidian Card (Zero Blur pass for mid-spec mobile 60fps) */
-    .apple-obsidian-card {
-      background-color: #141416;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 28px;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), 0 8px 32px rgba(0, 0, 0, 0.45);
-      transform: translateZ(0);
-      will-change: transform, border-color, box-shadow;
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease, box-shadow 0.22s ease;
-    }
-    .apple-obsidian-card:hover {
-      transform: translateY(-3px) translateZ(0);
-      border-color: rgba(255, 255, 255, 0.20);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 16px 48px rgba(0, 0, 0, 0.65);
-    }
-
-    /* Apple Glowing Processor Chip Badge */
-    .apple-chip-badge {
-      background: #ffffff;
-      color: #000000;
-      border-radius: 14px;
-      box-shadow: 0 0 28px rgba(255, 255, 255, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Apple Battery Visual Indicator */
-    .apple-battery-shell {
-      width: 38px;
-      height: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.75);
-      border-radius: 6px;
-      padding: 1.5px;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .apple-battery-shell::after {
-      content: '';
-      position: absolute;
-      right: -4px;
-      width: 2.5px;
-      height: 7px;
-      background: rgba(255, 255, 255, 0.75);
-      border-radius: 0 2px 2px 0;
-    }
-    .apple-battery-fill {
-      width: 100%;
-      height: 100%;
-      background-color: #34c759;
-      border-radius: 2.5px;
-      box-shadow: 0 0 8px #34c759;
-    }
-
-    /* Apple Hardware Phone Frame Bezel */
-    .apple-phone-bezel {
-      width: 280px;
-      height: 480px;
-      border-radius: 44px;
-      border: 4px solid #38383a;
-      background: #000000;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 0 0 2px rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .apple-dynamic-island {
-      width: 82px;
-      height: 22px;
-      background: #000000;
-      border-radius: 9999px;
-      margin: 10px auto 0;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 8px;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
-    }
-
-    /* Fluent 2 Floating / Docked Feedback Pill (Screenshot 1 Fidelity) */
-    .fluent-feedback-pill {
-      background: #161a26;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #f1f5f9;
-      border-radius: 9999px;
-      padding: 7px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.18s ease;
-    }
-    .fluent-feedback-pill:hover {
-      background: #20273a;
-      border-color: rgba(255, 255, 255, 0.28);
-      transform: translateY(-1.5px);
-    }
-
   </style>
 
-  <!-- ADSHIELD ENTERPRISE SANDBOX ENGINE (ZERO-AD SECURITY GUARANTEE) -->
+  <!-- ADSHIELD ENTERPRISE SANDBOX ENGINE -->
   <script>
     (function() {
-      // 1. Native window.open interception for popup & rogue redirect prevention
       const _nativeOpen = window.open;
       const SAFE_PROTOCOLS = ['magnet:', 'blob:', 'mailto:', 'data:'];
       const SAFE_DOMAINS = [
@@ -411,7 +212,7 @@
 
       const lockDesc = {
         get: function() { return protectedOpen; },
-        set: function() { /* tamper lock: disallow modification */ },
+        set: function() {},
         configurable: false,
         enumerable: true
       };
@@ -432,7 +233,6 @@
         }
       } catch (e3) {}
 
-      // 2. Click capture interception on root document
       document.addEventListener('click', function(e) {
         const a = e.target.closest('a');
         if (a) {
@@ -452,7 +252,6 @@
         }
       }, true);
 
-      // 3. MutationObserver for rogue ad injection sanitization
       const adObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           for (const node of mutation.addedNodes) {
@@ -480,20 +279,21 @@
 </head>
 <body class="bg-[#040711] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-600 selection:text-white antialiased">
 
-  <!-- TOP FLOATING SPATIAL CONTROL BRIDGE -->
+  <!-- TOP SPATIAL CONTROL BRIDGE: [Milkglass Pro, Explore, Watch Now, Search Catalog, Search button] -->
   <header class="sticky top-0 z-40 w-full transition-all bg-[#0a1020]/95 border-b border-white/10 backdrop-blur-md">
-    <!-- Subnav Bar -->
-    <div id="appleSubnavBar" class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
+    <div id="appleSubnavBar" class="max-w-7xl mx-auto px-4 sm:px-6 py-3">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         
         <!-- Left: Product Identity & Mobile Action Row -->
         <div class="flex items-center justify-between gap-3">
-          <span class="text-sm sm:text-base font-bold text-white tracking-tight">Milkglass Pro</span>
+          <a href="#" class="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
+            <span>Milkglass Pro</span>
+          </a>
           <div class="flex sm:hidden items-center gap-2">
-            <button onclick="scrollToExplore()" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
+            <button id="mobileExploreBtn" onclick="scrollToExplore()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
               Explore
             </button>
-            <button onclick="launchFeaturedStream()" class="px-3.5 py-1.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-md shadow-blue-500/25 transition-all active:scale-95">
+            <button id="mobileWatchNowBtn" onclick="launchFeaturedStream()" class="px-4 py-1.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-md shadow-blue-500/25 transition-all active:scale-95">
               Watch Now
             </button>
           </div>
@@ -507,39 +307,36 @@
                 type="text" 
                 id="globalSearchInput"
                 placeholder="Search catalog..." 
-                class="w-full bg-black/50 border border-white/15 text-xs rounded-xl pl-8 pr-8 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
+                class="w-full bg-black/50 border border-white/15 text-xs sm:text-sm rounded-xl pl-8 pr-8 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
               >
-              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5"></i>
               <button id="clearSearchBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white transition-colors">
                 <i data-lucide="x" class="w-3.5 h-3.5"></i>
               </button>
             </div>
-            <button id="globalSearchBtn" onclick="submitManualSearch()" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-600/30 flex items-center gap-1.5 transition-all shrink-0 active:scale-95">
-              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            <button id="globalSearchBtn" onclick="submitManualSearch()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-brand-600/30 flex items-center gap-1.5 transition-all shrink-0 active:scale-95">
+              <i data-lucide="search" class="w-4 h-4"></i>
               <span>Search</span>
             </button>
           </div>
         </div>
 
         <!-- Right: Desktop Dual Action Pills -->
-        <div class="hidden sm:flex items-center gap-2 shrink-0">
-          <button onclick="scrollToExplore()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
+        <div class="hidden sm:flex items-center gap-2.5 shrink-0">
+          <button id="exploreBtn" onclick="scrollToExplore()" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium border border-white/10 transition-all active:scale-95">
             Explore
           </button>
-          <button onclick="launchFeaturedStream()" class="px-4 py-1.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-md shadow-blue-500/25 transition-all active:scale-95">
+          <button id="watchNowBtn" onclick="launchFeaturedStream()" class="px-5 py-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs sm:text-sm font-semibold shadow-md shadow-blue-500/25 transition-all active:scale-95">
             Watch Now
           </button>
         </div>
 
       </div>
-
-      <!-- 5-Item Smart Recommendation Pills Strip Directly Below Search Bar -->
-      <div id="searchRecommendationsStrip" class="flex items-center sm:justify-center gap-1.5 overflow-x-auto pt-2 pb-0.5 text-xs font-mono"></div>
     </div>
   </header>
 
   <!-- MAIN VIEWPORT CONTAINER -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 space-y-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
 
     <!-- SEARCH RESULTS SECTION (DYNAMIC POPUP) -->
     <section id="searchResultsSection" class="hidden space-y-4">
@@ -556,670 +353,17 @@
       <div id="searchResultsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5"></div>
     </section>
 
-    <!-- ========================================================================= -->
-    <!-- VIEW 1: CINEMA CONSOLE & STREAMING HUB -->
-    <!-- ========================================================================= -->
-    <div id="viewConsole" class="space-y-8">
-      
-      <!-- HERO CINEMATIC SPATIAL DECK -->
-      <section id="heroSection" class="relative rounded-3xl overflow-hidden lqd-shell min-h-[380px] sm:min-h-[440px] flex items-end shadow-2xl border border-white/20">
-        <!-- Ambient Art Projection Backdrop -->
-        <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-[0.65] scale-105" style="background-image: url('https://s4.anilist.co/file/anilistcdn/media/anime/banner/189123-s6R5wYx8G9uI.jpg');"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-[#040711] via-[#040711]/75 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#040711] via-[#040711]/60 to-transparent"></div>
-
-        <!-- Cinema Deck Content -->
-        <div class="relative z-10 p-5 sm:p-9 w-full flex flex-col justify-end">
-          
-          <!-- Media Dossier & Primary Controls Wrapper with Low-Fade Container -->
-          <div id="heroContent" class="max-w-2xl space-y-3.5 transition-opacity duration-300">
-            <div class="flex items-center gap-2 flex-wrap font-mono">
-              <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white flex items-center gap-1.5 uppercase tracking-wider shadow-md specular-rim border border-white/20">
-                <i data-lucide="sparkles" class="w-3 h-3"></i> Ongoing Simulcast
-              </span>
-              <span id="heroWatchabilityBadge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono">
-                Latest: Episode 3 of 25
-              </span>
-              <span id="heroScore" class="text-xs font-bold text-amber-300 flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-lg border border-white/15 font-mono">
-                <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-                <span>8.8 / 10</span>
-              </span>
-            </div>
-
-            <h1 id="heroTitle" class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-              Blue Box Season 2
-            </h1>
-            
-            <p id="heroDesc" class="text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed max-w-xl">
-              Taiki Inomata continues his journey in badminton while navigating his feelings for Chinatsu Kano as high school tournament season reaches peak intensity.
-            </p>
-
-            <div class="flex flex-wrap items-center gap-3 pt-2">
-              <button id="heroPlayBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold text-xs tracking-wide shadow-xl shadow-brand-600/40 flex items-center gap-2 transition-all specular-rim border border-white/20 active:scale-95">
-                <i data-lucide="play" class="w-4 h-4 fill-white"></i> Watch Now
-              </button>
-              <button id="heroDetailBtn" class="px-4 py-2.5 rounded-xl bg-surface-card/90 hover:bg-surface-hover text-slate-200 border border-white/15 font-semibold text-xs tracking-wide flex items-center gap-2 transition-all specular-rim active:scale-95">
-                <i data-lucide="info" class="w-3.5 h-3.5"></i> Information
-              </button>
-            </div>
-
-            <!-- Cyclical Carousel Progress Dots -->
-            <div id="heroCarouselDots" class="flex items-center gap-1.5 pt-2">
-              <button type="button" onclick="jumpHeroSlide(0)" class="h-1.5 rounded-full transition-all duration-300 w-6 bg-brand-500" title="Slide 1"></button>
-              <button type="button" onclick="jumpHeroSlide(1)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 2"></button>
-              <button type="button" onclick="jumpHeroSlide(2)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 3"></button>
-              <button type="button" onclick="jumpHeroSlide(3)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 4"></button>
-              <button type="button" onclick="jumpHeroSlide(4)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 5"></button>
-            </div>
-          </div>
+    <!-- EXPLORE CATALOG SECTION -->
+    <section id="exploreSection" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="compass" class="w-4 h-4 text-brand-400"></i>
+          <h2 class="text-sm font-bold text-white font-mono uppercase tracking-tight">Explore Catalog</h2>
         </div>
-      </section>
-
-      <!-- ENTERPRISE TELEMETRY STATUS STRIP -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-        <div class="p-3.5 rounded-2xl lqd-card flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/25">
-            <i data-lucide="server" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block font-semibold">Ingest Gateway</span>
-            <span class="text-slate-100 font-bold text-[11px]">Hybrid P2P & GraphQL</span>
-          </div>
-        </div>
-        <div class="p-3.5 rounded-2xl lqd-card flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/25">
-            <i data-lucide="network" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block font-semibold">Distribution Cluster</span>
-            <span class="text-slate-100 font-bold text-[11px]">7 Global Edge Nodes</span>
-          </div>
-        </div>
-        <div class="p-3.5 rounded-2xl lqd-card flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/25">
-            <i data-lucide="activity" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block font-semibold">Failover SLA</span>
-            <span class="text-slate-100 font-bold text-[11px]">7.5s Autonomous Watchdog</span>
-          </div>
-        </div>
-        <div class="p-3.5 rounded-2xl lqd-card flex items-center gap-3">
-          <div class="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/25">
-            <i data-lucide="shield-check" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block font-semibold">Client AdShield</span>
-            <span class="text-slate-100 font-bold text-[11px]">Tamper-Locked Kernel</span>
-          </div>
-        </div>
+        <span class="text-[11px] text-slate-400 font-mono">Curated Streaming Feeds</span>
       </div>
-
-      
-      <!-- ========================================================================= -->
-      <!-- SECTION: APPLE COMPARISON SPECIFICATION ("WORTH THE UPGRADE? YOU BET.")   -->
-      <!-- ========================================================================= -->
-      <section id="appleComparisonSection" class="space-y-6 pt-4 border-t border-white/10">
-        <div class="text-left space-y-2">
-          <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight font-sans">
-            Worth the upgrade?<br>You bet.
-          </h2>
-          <p class="text-xs sm:text-sm text-slate-400 font-sans">
-            Select an anime to compare with Milkglass Pro:
-          </p>
-          
-          <!-- Apple Dropdown Selection Pill with Active Blue Ring -->
-          <div class="relative inline-block w-full max-w-sm pt-1">
-            <button id="comparisonDropdownBtn" onclick="toggleComparisonDropdown()" class="w-full flex items-center justify-between px-5 py-3 rounded-full bg-[#141416] border-2 border-[#0071e3] shadow-[0_0_16px_rgba(0,113,227,0.3)] text-white text-xs sm:text-sm font-semibold transition-all">
-              <span id="comparisonSelectedTitle">Sousou no Frieren (Season 1)</span>
-              <i data-lucide="chevron-down" class="w-4 h-4 text-[#0071e3]"></i>
-            </button>
-            <div id="comparisonDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-2 rounded-2xl bg-[#161618] border border-white/15 shadow-2xl p-2 z-30 space-y-1 font-sans text-xs">
-              <button onclick="selectComparisonAnime(0)" class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-white/10 text-white flex justify-between items-center">
-                <span>Sousou no Frieren (Season 1)</span>
-                <span class="text-[10px] text-emerald-400 font-mono">COMPLETED</span>
-              </button>
-              <button onclick="selectComparisonAnime(1)" class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-white/10 text-white flex justify-between items-center">
-                <span>Ao no Hako Season 2 (Blue Box)</span>
-                <span class="text-[10px] text-amber-400 font-mono">SIMULCAST</span>
-              </button>
-              <button onclick="selectComparisonAnime(2)" class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-white/10 text-white flex justify-between items-center">
-                <span>Solo Leveling Season 2: Arise</span>
-                <span class="text-[10px] text-brand-400 font-mono">HIGH-BITRATE</span>
-              </button>
-              <button onclick="selectComparisonAnime(3)" class="w-full text-left px-3.5 py-2 rounded-xl hover:bg-white/10 text-white flex justify-between items-center">
-                <span>Kimetsu no Yaiba: Infinity Castle</span>
-                <span class="text-[10px] text-purple-400 font-mono">4K CINEMA</span>
-              </button>
-            </div>
-          </div>
-          
-          <p class="text-xs sm:text-sm text-slate-400 font-medium pt-2">
-            Here's what you get with <strong class="text-white">Milkglass Pro</strong>.
-          </p>
-        </div>
-
-        <!-- 2x2 Grid of Deep Obsidian Cards (Border-radius: 28px, #141416, 2x2 on all viewports) -->
-        <div class="grid grid-cols-2 gap-3 sm:gap-4 max-w-5xl">
-          
-          <!-- Card 1: 4K UHD Master Stream Engine -->
-          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between min-h-[220px] sm:min-h-[260px]">
-            <div>
-              <h3 id="comparisonCameraSpec" class="text-xs sm:text-base font-semibold text-slate-200 leading-snug">
-                4K UHD Master Stream Engine with variable bitrate and Pro controls
-              </h3>
-            </div>
-            <div class="mt-4 sm:mt-6 flex items-center justify-center">
-              <div class="relative w-24 h-20 sm:w-36 sm:h-28 rounded-2xl bg-black/60 border border-white/15 p-2 flex items-center justify-center overflow-hidden">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-brand-500/40 flex items-center justify-center shadow-lg shadow-brand-500/20">
-                  <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-full border border-white/30 flex items-center justify-center bg-gradient-to-tr from-brand-600/30 to-purple-600/30">
-                    <i data-lucide="aperture" class="w-5 h-5 sm:w-7 sm:h-7 text-white"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 2: Quantum A20 Pro Processing Core -->
-          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
-            <div class="w-full">
-              <div class="apple-chip-badge w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-2 sm:mb-4 p-2 sm:p-3 flex flex-col items-center justify-center">
-                <svg class="w-5 h-5 sm:w-7 sm:h-7 text-black mb-0.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.12.64-2.79 1.43-.59.68-1.1 1.77-1.01 2.81 1.07.08 2.18-.62 2.79-1.37z"/>
-                </svg>
-                <span class="font-extrabold text-[10px] sm:text-sm tracking-tight text-black font-sans">A20 PRO</span>
-              </div>
-            </div>
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 id="comparisonChipSpeed" class="text-lg sm:text-3xl font-extrabold text-white my-0.5 sm:my-1 font-sans">20% faster</h3>
-              <p class="text-[10px] sm:text-sm text-slate-300 font-medium">6-core CPU multi-CDN decoding</p>
-            </div>
-          </div>
-
-          <!-- Card 3: 6 More Hours Battery Visual -->
-          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 class="text-lg sm:text-3xl font-extrabold text-white mt-0.5 sm:mt-1 mb-1 sm:mb-2 font-sans">
-                <span id="comparisonBatteryHours">6 more hours</span>
-              </h3>
-              <div class="apple-battery-shell mx-auto my-2 sm:my-3">
-                <div class="apple-battery-fill"></div>
-              </div>
-            </div>
-            <p class="text-[10px] sm:text-sm text-slate-300 font-medium">
-              video playback on Milkglass Pro Max
-            </p>
-          </div>
-
-          <!-- Card 4: 50% Fast Buffer in 15 seconds -->
-          <div class="apple-obsidian-card p-4 sm:p-7 flex flex-col justify-between items-center text-center min-h-[220px] sm:min-h-[260px]">
-            <div>
-              <p class="text-[10px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider">Up to</p>
-              <h3 class="text-lg sm:text-3xl font-extrabold text-white mt-0.5 sm:mt-1 mb-1 sm:mb-2 font-sans">50% buffer</h3>
-              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center mx-auto my-1.5 sm:my-2 text-blue-400">
-                <i data-lucide="zap" class="w-4 h-4 sm:w-5 sm:h-5 fill-blue-400"></i>
-              </div>
-            </div>
-            <p id="comparisonBufferSpec" class="text-[10px] sm:text-sm text-slate-300 font-medium">
-              in around 15 seconds with compatible adapter and multi-CDN failover
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- SECTION: APPLE INTELLIGENCE HARDWARE SHOWCASE & LIQUID NOTIFICATIONS      -->
-      <!-- ========================================================================= -->
-      <section id="appleIntelligenceSection" class="space-y-6 pt-4 border-t border-white/10">
-        <div class="text-left space-y-2">
-          <h2 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight font-sans">
-            iOS and Milkglass Intelligence.<br>Helpful in all the right places.
-          </h2>
-          <a href="#" onclick="openIntelligenceDossier(); return false;" class="text-[#2997ff] hover:underline inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium">
-            Learn more about iOS 27 and Apple Intelligence <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-          </a>
-        </div>
-
-        <!-- Phone Hardware Frame Showcase Carousel (Horizontal Swipe Physics & Snap) -->
-        <div class="flex flex-row items-start gap-6 sm:gap-8 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth -webkit-overflow-scrolling-touch scrollbar-none">
-          
-          <!-- Device Frame 1: Boarding Pass & Call Context -->
-          <div class="flex flex-col items-start shrink-0 w-[280px] sm:w-[320px] snap-start">
-            <div class="apple-phone-bezel p-3 flex flex-col justify-between bg-gradient-to-b from-[#2d1b24] via-[#140e16] to-[#0a080d]">
-              <!-- Dynamic Island Pill -->
-              <div class="apple-dynamic-island">
-                <div class="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] border border-white/10"></div>
-              </div>
-              
-              <!-- Mini flight notification top -->
-              <div class="mt-4 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 flex items-center justify-between text-[10px] text-white font-mono">
-                <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-purple-600 flex items-center justify-center text-[8px]"><i data-lucide="plane" class="w-2.5 h-2.5 text-white"></i></span> 00:04 Passenger Airways</span>
-                <span class="text-slate-400">Now</span>
-              </div>
-
-              <!-- Liquid Glass Boarding Pass Ticket Inside Phone -->
-              <div class="my-auto p-4 rounded-2xl bg-white/[0.08] border border-white/15 shadow-xl text-white font-sans space-y-2">
-                <div class="text-[9px] uppercase tracking-wider text-slate-300">Passenger Airways • Confirmation</div>
-                <div class="text-base font-extrabold tracking-wide font-mono">LUI5P33</div>
-                <div class="flex items-center justify-between text-xs font-semibold pt-1 border-t border-white/10">
-                  <span>ORD</span>
-                  <span class="text-slate-400 font-mono tracking-widest text-[10px]"> -------></span>
-                  <span>BCN</span>
-                </div>
-                <div class="text-[9px] text-slate-400 flex justify-between pt-1">
-                  <span>Apr 17 • 6:30 PM</span>
-                  <span>Found in Mail</span>
-                </div>
-              </div>
-
-              <div class="w-24 h-1 bg-white/40 rounded-full mx-auto mb-1"></div>
-            </div>
-
-            <!-- Leading Bold Title Caption -->
-            <p class="text-xs sm:text-sm text-slate-300 max-w-xs mt-3 leading-relaxed text-left">
-              <strong class="text-white font-bold">Call Context.</strong> Call Context can proactively surface relevant information from across your apps when you're calling a business — like a confirmation code from Mail when you call an airline.
-            </p>
-          </div>
-
-          <!-- Device Frame 2: Child Safety & AdShield Protection -->
-          <div class="flex flex-col items-start shrink-0 w-[280px] sm:w-[320px] snap-start">
-            <div class="apple-phone-bezel p-3 flex flex-col justify-between bg-gradient-to-b from-[#162032] via-[#0c121e] to-[#070b12]">
-              <!-- Dynamic Island Pill -->
-              <div class="apple-dynamic-island">
-                <div class="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] border border-white/10"></div>
-              </div>
-
-              <!-- Mini Child Safety Card -->
-              <div class="my-auto p-4 rounded-2xl bg-white/[0.08] border border-white/15 shadow-xl text-white font-sans space-y-2.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 to-indigo-500 mx-auto flex items-center justify-center shadow-md">
-                  <i data-lucide="shield" class="w-5 h-5 text-white"></i>
-                </div>
-                <div class="text-center font-bold text-xs">Ask to Browse "cyberpets"</div>
-                <div class="text-[10px] text-slate-300 text-center">Pending Approval • AdShield Safe</div>
-                <div class="flex items-center gap-2 pt-1 font-mono text-[10px]">
-                  <button class="flex-1 py-1 rounded-lg bg-white/10 text-slate-300">Decline</button>
-                  <button class="flex-1 py-1 rounded-lg bg-brand-600 text-white font-bold">Allow</button>
-                </div>
-              </div>
-
-              <div class="w-24 h-1 bg-white/40 rounded-full mx-auto mb-1"></div>
-            </div>
-
-            <!-- Leading Bold Title Caption -->
-            <p class="text-xs sm:text-sm text-slate-300 max-w-xs mt-3 leading-relaxed text-left">
-              <strong class="text-white font-bold">Child safety features.</strong> Expanded child safety features help make it easier for parents and guardians to keep kids safe online with zero rogue ads.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- SECTION: MICROSOFT FLUENT 2 SPECULAR GRADIENT BORDER CARDS STACK          -->
-      <!-- ========================================================================= -->
-      <section id="fluentDesignSection" class="relative space-y-4 pt-6 border-t border-white/10 overflow-hidden">
-        
-        <!-- Curved Atmospheric Earth Horizon Glow (Strict Screenshot 1 Reproduction) -->
-        <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[140%] h-44 rounded-[100%] bg-gradient-to-b from-blue-500/20 via-cyan-500/10 to-transparent blur-xl pointer-events-none"></div>
-        <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[120%] h-36 rounded-[100%] border-t-2 border-cyan-400/25 pointer-events-none"></div>
-
-        <div class="relative z-10 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="8" height="8" rx="2" fill="#0078d4"/>
-              <rect x="13" y="3" width="8" height="8" rx="2" fill="#50e6ff"/>
-              <rect x="3" y="13" width="8" height="8" rx="2" fill="#2b88d8"/>
-              <rect x="13" y="13" width="8" height="8" rx="2" fill="#005a9e"/>
-            </svg>
-            <h2 class="text-base sm:text-lg font-bold text-white font-sans tracking-tight">
-              Fluent 2 Accessible Telemetry & Controls
-            </h2>
-          </div>
-          <span class="text-[11px] text-slate-400 font-mono">WCAG 2.2 Compliant</span>
-        </div>
-
-        <!-- Vertical Stack of Distinctive Cards (Pixel-faithful to Screenshot 1) -->
-        <div class="relative z-10 space-y-3.5 max-w-3xl">
-          
-          <!-- Card 1: ACTIVE CARD WITH GLOWING SPECULAR GRADIENT BORDER -->
-          <div class="fluent-gradient-border-active transition-all cursor-pointer">
-            <div class="fluent-gradient-border-active-inner p-3.5 sm:p-4 flex items-center gap-4">
-              <div class="fluent-circular-badge">
-                <i data-lucide="aperture" class="w-5 h-5 text-white"></i>
-              </div>
-              <span class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Focus Order</span>
-            </div>
-          </div>
-
-          <!-- Card 2: A11y Color Contrast Checker -->
-          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
-            <div class="fluent-circular-badge">
-              <i data-lucide="contrast" class="w-5 h-5 text-white"></i>
-            </div>
-            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">A11y – Color Contrast Checker</span>
-          </div>
-
-          <!-- Card 3: Content Reel -->
-          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
-            <div class="fluent-circular-badge">
-              <!-- Content reel 4-circle vector -->
-              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="6" r="2.5"/>
-                <circle cx="12" cy="18" r="2.5"/>
-                <circle cx="6" cy="12" r="2.5"/>
-                <circle cx="18" cy="12" r="2.5"/>
-              </svg>
-            </div>
-            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">Content Reel</span>
-          </div>
-
-          <!-- Card 4: Icon Scaling Tool -->
-          <div class="p-3.5 sm:p-4 rounded-[20px] bg-[#131722] border border-white/10 flex items-center gap-4 hover:border-white/20 transition-all cursor-pointer">
-            <div class="fluent-circular-badge">
-              <i data-lucide="pen-tool" class="w-5 h-5 text-white"></i>
-            </div>
-            <span class="text-sm sm:text-base font-semibold text-white tracking-tight">Icon Scaling Tool</span>
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- SECTION 0: DISTRIBUTION HUB & TELEMETRY SYNCHRONIZATION -->
-      <section id="watchability" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
-            <h2 class="text-sm sm:text-base font-bold text-white font-mono tracking-tight uppercase">
-              Distribution Hub & Telemetry Synchronization
-            </h2>
-          </div>
-          <span class="text-[11px] text-slate-400 font-mono">Live Ingest Status</span>
-        </div>
-        <div id="watchabilityGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
-      </section>
-
-      <!-- SECTION 1: TRENDING HIGH-THROUGHPUT MEDIA -->
-      <section id="trending" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="trending-up" class="w-4 h-4 text-brand-400"></i>
-            <h2 class="text-sm sm:text-base font-bold text-white font-mono tracking-tight uppercase">
-              Trending High-Throughput Media
-            </h2>
-          </div>
-          <span class="text-[11px] text-slate-400 font-mono">Realtime Velocity</span>
-        </div>
-        <div id="trendingGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5"></div>
-      </section>
-
-      <!-- SECTION 3: SIMULCAST INGEST FEED -->
-      <section id="simulcast" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="radio" class="w-4 h-4 text-brand-400 animate-pulse"></i>
-            <h2 class="text-sm sm:text-base font-bold text-white font-mono tracking-tight uppercase">
-              Simulcast Ingest Feed (Regional Broadcast Releases)
-            </h2>
-          </div>
-          <button id="refreshSimulcastBtn" class="px-2.5 py-1 rounded-lg bg-surface-card hover:bg-surface-hover text-slate-300 border border-white/10 text-xs font-mono flex items-center gap-1.5 transition-all">
-            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh Feed
-          </button>
-        </div>
-        <div id="simulcastList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-      </section>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 2: SIMULCAST RADAR & BROADCAST SCHEDULE -->
-    <!-- ========================================================================= -->
-    <div id="viewRadar" class="hidden space-y-6">
-      <div class="p-5 rounded-3xl lqd-shell border border-white/15 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 font-mono">
-            <i data-lucide="radar" class="w-5 h-5 text-blue-400"></i>
-            <h2 class="text-lg font-bold text-white uppercase tracking-tight">Simulcast Broadcast Radar</h2>
-          </div>
-          <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-            JST / WIB Timezone Synced
-          </span>
-        </div>
-        <p class="text-xs text-slate-300">
-          Real-time chronometer tracking upcoming simulcast releases within the 24-hour transmission window.
-        </p>
-      </div>
-
-      <section id="countdown" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="clock" class="w-4 h-4 text-blue-400"></i>
-            <h2 class="text-sm font-bold text-white font-mono uppercase">Upcoming Airing Countdown</h2>
-          </div>
-        </div>
-        <div id="countdownGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
-      </section>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 3: COMPLETE MEDIA CATALOG & DATABASE -->
-    <!-- ========================================================================= -->
-    <div id="viewCatalog" class="hidden space-y-6">
-      <div class="p-5 rounded-3xl lqd-shell border border-white/15 space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 font-mono">
-            <i data-lucide="layout-grid" class="w-5 h-5 text-indigo-400"></i>
-            <h2 class="text-lg font-bold text-white uppercase tracking-tight">Enterprise Media Catalog</h2>
-          </div>
-          <span class="text-xs font-mono text-slate-400">AniList GraphQL Master Index</span>
-        </div>
-        <p class="text-xs text-slate-300">
-          Comprehensive repository of TV broadcasts, feature films, and original animations.
-        </p>
-      </div>
-
-      <section id="popular" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="flame" class="w-4 h-4 text-brand-400"></i>
-            <h2 class="text-sm font-bold text-white font-mono uppercase">Top Rated Enterprise Deliveries</h2>
-          </div>
-        </div>
-        <div id="popularGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5"></div>
-      </section>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 4: DEDICATED BATCH DISTRIBUTION ARCHIVE VAULT -->
-    <!-- ========================================================================= -->
-    <div id="viewVault" class="hidden space-y-6">
-      <div class="p-6 rounded-3xl lqd-shell border border-white/20 space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div class="flex items-center gap-2.5 font-mono">
-            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-              <i data-lucide="archive" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-lg font-bold text-white uppercase tracking-tight">Batch Distribution Archive Vault</h2>
-              <span class="text-[10px] text-slate-400">BEP 0009 / BEP 0053 Standard Multi-Resolution Media Bundles</span>
-            </div>
-          </div>
-          <span class="px-3 py-1 rounded-xl text-xs font-mono font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            STRICT GATING: COMPLETED BROADCASTS ONLY
-          </span>
-        </div>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          High-density archive storage for full season packages. Per enterprise protocol, batch archives are strictly locked while a broadcast is ongoing (<span class="font-mono text-amber-300 font-semibold">RELEASING</span>) and unlocked upon season completion (<span class="font-mono text-emerald-400 font-semibold">FINISHED</span>).
-        </p>
-      </div>
-
-      <!-- Vault Showcase Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- COMPLETED SHOWCASE: Sousou no Frieren (ID 154587) -->
-        <div class="p-5 rounded-2xl lqd-card border border-emerald-500/30 space-y-4">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
-                Status: Completed (28 Episodes)
-              </span>
-              <h3 class="text-base font-bold text-white mt-1.5">Sousou no Frieren (Frieren: Beyond Journey's End)</h3>
-              <p class="text-xs text-slate-400 font-mono mt-0.5">Hash: urn:btih:67452279efcf3c3c98bad91e10333033c3d389f9</p>
-            </div>
-            <div class="text-right font-mono shrink-0">
-              <span class="text-xs font-bold text-white block">~ 37.8 GB</span>
-              <span class="text-[10px] text-slate-400">1080p FHD Master</span>
-            </div>
-          </div>
-          <div class="p-3 rounded-xl bg-black/40 border border-white/10 text-xs font-mono space-y-1 text-slate-300">
-            <div class="flex justify-between"><span>Resolution Tiers:</span><span class="text-slate-100 font-semibold">1080p, 720p, 480p, 360p</span></div>
-            <div class="flex justify-between"><span>Track Verification:</span><span class="text-brand-400 font-semibold">Dual Sub Indo & English</span></div>
-            <div class="flex justify-between"><span>Mirror Cluster:</span><span class="text-emerald-400 font-semibold">4 Nodes Active (Nyaa, Otaku, Samehada, Kurama)</span></div>
-          </div>
-          <div class="flex items-center gap-2 pt-1 font-mono">
-            <button onclick="openDetailModal(154587)" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all specular-rim">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i> Open Batch Archive (28 Ep)
-            </button>
-            <button onclick="copySingleBatchMagnet('magnet%3A%3Fxt%3Durn%3Abtih%3A67452279efcf3c3c98bad91e10333033c3d389f9%26dn%3DFrieren_Batch_1080p', '1-28')" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 text-xs transition-all" title="Copy Magnet Infohash">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- ONGOING SHOWCASE: Ao no Hako Season 2 (ID 189123) -->
-        <div class="p-5 rounded-2xl lqd-card border border-amber-500/20 space-y-4 opacity-90">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25 uppercase">
-                Status: Ongoing Simulcast (Ep 2 / 25)
-              </span>
-              <h3 class="text-base font-bold text-white mt-1.5">Ao no Hako Season 2 (Blue Box S2)</h3>
-              <p class="text-xs text-slate-400 font-mono mt-0.5">Broadcast Transmission Active</p>
-            </div>
-            <div class="text-right font-mono shrink-0">
-              <span class="text-xs font-bold text-amber-400 block flex items-center gap-1 justify-end">
-                <i data-lucide="lock" class="w-3 h-3"></i> LOCKED
-              </span>
-              <span class="text-[10px] text-slate-400">Broadcast Incomplete</span>
-            </div>
-          </div>
-          <div class="p-3 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs font-mono space-y-1 text-slate-300">
-            <p class="text-amber-200/90 text-[11px] leading-relaxed">
-              Batch archive compilation is locked until all 25 episodes have aired. Individual weekly releases are available in the stream console.
-            </p>
-          </div>
-          <div class="flex items-center gap-2 pt-1 font-mono">
-            <button onclick="openDetailModal(189123)" class="flex-1 py-2 rounded-xl bg-surface-card hover:bg-surface-hover text-slate-200 border border-white/10 font-medium text-xs flex items-center justify-center gap-2 transition-all">
-              <i data-lucide="info" class="w-3.5 h-3.5"></i> Inspect Episode Status
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 5: CDN EDGE NOC TERMINAL & ADSHIELD AUDIT -->
-    <!-- ========================================================================= -->
-    <div id="viewNetwork" class="hidden space-y-6">
-      <div class="p-6 rounded-3xl lqd-shell border border-white/20 space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5 font-mono">
-            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-              <i data-lucide="activity" class="w-4 h-4"></i>
-            </div>
-            <div>
-              <h2 class="text-lg font-bold text-white uppercase tracking-tight">CDN Network Operations Center (NOC)</h2>
-              <span class="text-[10px] text-slate-400">Autonomous Edge Routing & AdShield Sandbox Monitor</span>
-            </div>
-          </div>
-          <button onclick="triggerSilentFailover('Manual NOC Operator Latency Audit')" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-mono text-xs font-bold transition-all shadow-md specular-rim">
-            Test Autonomous Failover
-          </button>
-        </div>
-        <p class="text-xs text-slate-300">
-          Real-time diagnostics for global edge ingest points, latency health watchdogs, and client-side anti-advertising shields.
-        </p>
-      </div>
-
-      <!-- Edge Cluster Topology Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 font-mono text-xs">
-        <div class="p-4 rounded-2xl lqd-card space-y-2 border border-emerald-500/30">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white">Edge Node 01</span>
-            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">PRIMARY</span>
-          </div>
-          <div class="text-slate-300 text-[11px]">AniEmbed Edge Prime (1080p FHD)</div>
-          <div class="flex justify-between text-slate-400 pt-1 border-t border-white/10">
-            <span>Ping Latency:</span>
-            <span class="text-emerald-400 font-bold">14ms</span>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl lqd-card space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white">Edge Node 02</span>
-            <span class="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded border border-blue-500/20">STANDBY</span>
-          </div>
-          <div class="text-slate-300 text-[11px]">VidSrc Multi-Sub Backup</div>
-          <div class="flex justify-between text-slate-400 pt-1 border-t border-white/10">
-            <span>Ping Latency:</span>
-            <span class="text-blue-400 font-bold">22ms</span>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl lqd-card space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white">Edge Node 03</span>
-            <span class="text-[10px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">STANDBY</span>
-          </div>
-          <div class="text-slate-300 text-[11px]">DesuStream Regional CDN</div>
-          <div class="flex justify-between text-slate-400 pt-1 border-t border-white/10">
-            <span>Ping Latency:</span>
-            <span class="text-indigo-400 font-bold">36ms</span>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl lqd-card space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-white">Edge Node 04</span>
-            <span class="text-[10px] text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded border border-purple-500/20">STANDBY</span>
-          </div>
-          <div class="text-slate-300 text-[11px]">Kuramanime Regional Hub</div>
-          <div class="flex justify-between text-slate-400 pt-1 border-t border-white/10">
-            <span>Ping Latency:</span>
-            <span class="text-purple-400 font-bold">41ms</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Security Kernel Audit Table -->
-      <div class="p-5 rounded-2xl lqd-card space-y-3 font-mono text-xs">
-        <h4 class="font-bold text-white uppercase text-xs">AdShield Kernel Tamper-Resistance Status</h4>
-        <div class="space-y-2 text-[11px]">
-          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-white/10">
-            <span class="text-slate-300">window.open Hook & Descriptor Lock:</span>
-            <span class="text-emerald-400 font-bold">ACTIVE (NON-CONFIGURABLE DESCRIPTOR)</span>
-          </div>
-          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-white/10">
-            <span class="text-slate-300">Iframe Sandbox Policy:</span>
-            <span class="text-emerald-400 font-bold">OMITTED (UNBLOCKED EMBED MEDIA PLAYBACK)</span>
-          </div>
-          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-white/10">
-            <span class="text-slate-300">Root Document Click Interceptor:</span>
-            <span class="text-emerald-400 font-bold">ACTIVE (POPUP CLICK-JACKING MITIGATED)</span>
-          </div>
-          <div class="flex justify-between p-2 rounded-lg bg-black/40 border border-white/10">
-            <span class="text-slate-300">DOM Mutation Ad Observer:</span>
-            <span class="text-emerald-400 font-bold">CONTINUOUS PURGE ACTIVE</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      <div id="catalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5"></div>
+    </section>
 
   </main>
 
@@ -1301,51 +445,27 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-2">
-          <!-- Finished Anime Batch Gateway -->
-          <div id="playerBatchAccessContainer" class="hidden">
-            <button onclick="openBatchDownloadModal()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1.5 transition-all specular-rim">
-              <i data-lucide="archive" class="w-3.5 h-3.5"></i> Full Season Batch
-            </button>
-          </div>
-          <!-- Ongoing Locked Notice -->
-          <div id="playerBatchLockedContainer" class="hidden text-slate-400 text-[11px] flex items-center gap-1">
-            <i data-lucide="lock" class="w-3 h-3 text-amber-400"></i> Batch Locked (Ongoing)
-          </div>
+        <!-- Quick Access to Batch Modal for Completed Shows -->
+        <div id="playerBatchAccessContainer" class="hidden flex items-center gap-2">
+          <button onclick="openBatchDownloadModal()" class="px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 transition-all">
+            <i data-lucide="archive" class="w-3.5 h-3.5"></i> Full Season Batch Archive
+          </button>
         </div>
       </div>
 
-      <!-- INDIVIDUAL EPISODE RESOLUTION EXPORT DRAWER -->
-      <div id="downloadPanel" class="hidden border-t border-white/15 bg-[#070b14]/95 p-4 sm:p-5 space-y-4">
-        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-          <div class="flex items-center gap-2 font-mono">
-            <i data-lucide="download" class="w-4 h-4 text-brand-400"></i>
-            <span class="text-xs font-bold text-white uppercase">Episode Resolution Export & P2P Stream</span>
-            <span id="downloadAnimeLabel" class="text-xs text-slate-400"></span>
-          </div>
-          <button onclick="toggleDownloadPanel()" class="text-slate-400 hover:text-white">
-            <i data-lucide="x" class="w-4 h-4"></i>
-          </button>
+      <!-- Individual Episode Download Panel (Drawer) -->
+      <div id="episodeDownloadPanel" class="hidden p-4 sm:p-6 border-t border-white/10 bg-[#070b14]/95 space-y-4 max-h-72 overflow-y-auto">
+        <div class="flex items-center justify-between font-mono text-xs">
+          <span class="font-bold text-white uppercase text-[11px]">Episode Download & Export Tiers:</span>
+          <span class="text-slate-400">BEP 0053 Infohash Standard</span>
         </div>
 
-        <!-- Resolution Selector Tabs -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
-          <button onclick="switchDownloadResolution('1080p')" class="p-2.5 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-left transition-all">
-            <span class="font-bold text-white block">1080p FHD</span>
-            <span class="text-[10px] text-slate-400">Master MKV (~1.35 GB)</span>
-          </button>
-          <button onclick="switchDownloadResolution('720p')" class="p-2.5 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-left transition-all">
-            <span class="font-bold text-white block">720p HD</span>
-            <span class="text-[10px] text-slate-400">Standard MP4 (~650 MB)</span>
-          </button>
-          <button onclick="switchDownloadResolution('480p')" class="p-2.5 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-left transition-all">
-            <span class="font-bold text-white block">480p SD</span>
-            <span class="text-[10px] text-slate-400">Bandwidth Saver (~320 MB)</span>
-          </button>
-          <button onclick="switchDownloadResolution('360p')" class="p-2.5 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-left transition-all">
-            <span class="font-bold text-white block">360p Compact</span>
-            <span class="text-[10px] text-slate-400">Mobile Tier (~180 MB)</span>
-          </button>
+        <!-- Resolution Selector Buttons -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <button id="dlRes1080Btn" onclick="switchDownloadResolution('1080p')" class="px-3 py-1.5 rounded-xl bg-brand-600 text-white font-bold">1080p FHD</button>
+          <button id="dlRes720Btn" onclick="switchDownloadResolution('720p')" class="px-3 py-1.5 rounded-xl bg-surface-card text-slate-300 hover:text-white border border-white/10">720p HD</button>
+          <button id="dlRes480Btn" onclick="switchDownloadResolution('480p')" class="px-3 py-1.5 rounded-xl bg-surface-card text-slate-300 hover:text-white border border-white/10">480p SD</button>
+          <button id="dlRes360Btn" onclick="switchDownloadResolution('360p')" class="px-3 py-1.5 rounded-xl bg-surface-card text-slate-300 hover:text-white border border-white/10">360p Compact</button>
         </div>
 
         <!-- Selected Resolution Spec Card -->
@@ -1376,16 +496,16 @@
           <span class="text-[11px] text-slate-400 uppercase font-semibold">4-Node Regional Mirror Distribution Cluster:</span>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
             <a id="mirrorNyaaLink" href="#" target="_blank" data-safe-download="true" class="p-2 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-slate-300 flex items-center justify-between">
-              <span>Nyaa.si Master</span> <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+              <span>Nyaa.si Master</span> <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
             </a>
             <a id="mirrorOtakuLink" href="#" target="_blank" data-safe-download="true" class="p-2 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-slate-300 flex items-center justify-between">
-              <span>Otakudesu Node</span> <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+              <span>Otakudesu Node</span> <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
             </a>
             <a id="mirrorSamehadaLink" href="#" target="_blank" data-safe-download="true" class="p-2 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-slate-300 flex items-center justify-between">
-              <span>Samehadaku Edge</span> <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+              <span>Samehadaku Edge</span> <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
             </a>
             <a id="mirrorKuramaLink" href="#" target="_blank" data-safe-download="true" class="p-2 rounded-xl bg-surface-card hover:bg-surface-hover border border-white/10 text-slate-300 flex items-center justify-between">
-              <span>Kuramanime Hub</span> <i data-lucide="external-link" class="w-3 h-3 text-slate-400"></i>
+              <span>Kuramanime Hub</span> <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
             </a>
           </div>
         </div>
@@ -1589,81 +709,11 @@
     </div>
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- COMMAND PALETTE MODAL (APPLE SPOTLIGHT & RAYCAST STYLE) -->
-  <!-- ========================================================================= -->
-  <div id="commandPaletteModal" class="hidden fixed inset-0 z-50 items-start justify-center pt-20 px-3 sm:px-6 fluent-smoke-backdrop transition-all">
-    <div class="relative w-full max-w-xl rounded-2xl fluent-acrylic-sheet overflow-hidden flex flex-col shadow-2xl border border-white/20">
-      <div class="p-3 sm:p-4 border-b border-white/10 flex items-center gap-3 bg-black/40">
-        <i data-lucide="search" class="w-5 h-5 text-brand-400"></i>
-        <input 
-          type="text" 
-          id="paletteSearchInput" 
-          placeholder="Type a query or select destination..." 
-          class="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none font-sans"
-        >
-        <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">ESC</kbd>
-      </div>
-
-      <div class="p-3 sm:p-4 space-y-3 max-h-96 overflow-y-auto text-xs font-mono">
-        <div>
-          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Quick Navigation</span>
-          <div class="mt-1.5 space-y-1">
-            <button onclick="paletteNavigate('console')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="tv" class="w-4 h-4 text-brand-400"></i> Stream Console</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">1</kbd>
-            </button>
-            <button onclick="paletteNavigate('radar')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="radar" class="w-4 h-4 text-blue-400"></i> Simulcast Radar</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">2</kbd>
-            </button>
-            <button onclick="paletteNavigate('catalog')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="layout-grid" class="w-4 h-4 text-indigo-400"></i> Full Catalog</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">3</kbd>
-            </button>
-            <button onclick="paletteNavigate('vault')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="archive" class="w-4 h-4 text-emerald-400"></i> Batch Distribution Vault</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">4</kbd>
-            </button>
-            <button onclick="paletteNavigate('network')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-amber-400"></i> CDN NOC Diagnostics</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">5</kbd>
-            </button>
-          </div>
-        </div>
-
-        <div class="pt-2 border-t border-white/10">
-          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Language Preference</span>
-          <div class="mt-1.5 space-y-1">
-            <button onclick="paletteSetSub('id')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Indonesian Subtitles</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">ID</kbd>
-            </button>
-            <button onclick="paletteSetSub('en')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
-              <span class="flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4 text-blue-400"></i> English Subtitles</span>
-              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">EN</kbd>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SPATIAL VIEW SWITCHER HELPER -->
+  <!-- INTERACTION UTILITY SCRIPT -->
   <script>
-    function switchMainView(viewName) {
-      const views = ['Console', 'Radar', 'Catalog', 'Vault', 'Network'];
-      views.forEach(v => {
-        const el = document.getElementById('view' + v);
-        if (el) {
-          if (v.toLowerCase() === viewName.toLowerCase()) {
-            el.classList.remove('hidden');
-          } else {
-            el.classList.add('hidden');
-          }
-        }
-      });
-      if (window.lucide) lucide.createIcons();
+    function scrollToExplore() {
+      const el = document.getElementById('exploreSection');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
 
     function closeSearchSection() {
@@ -1671,187 +721,14 @@
       if (sec) sec.classList.add('hidden');
     }
 
-    // Global Shortcut Engine: Ctrl+K / Cmd+K / Esc
     window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        toggleCommandPalette();
-      } else if (e.key === 'Escape') {
+      if (e.key === 'Escape') {
         if (typeof ModalManager !== 'undefined' && typeof ModalManager.closeTop === 'function') {
           ModalManager.closeTop();
-        } else {
-          closeCommandPalette();
-          if (typeof closeFeedbackModal === 'function') closeFeedbackModal();
         }
-        const compMenu = document.getElementById('comparisonDropdownMenu');
-        if (compMenu) compMenu.classList.add('hidden');
-      }
-    });
-
-    function toggleCommandPalette() {
-      const modal = document.getElementById('commandPaletteModal');
-      if (!modal) return;
-      const isHidden = modal.classList.contains('hidden');
-      if (isHidden) {
-        if (typeof ModalManager !== 'undefined') {
-          ModalManager.open('commandPaletteModal');
-        } else {
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-        }
-        const input = document.getElementById('paletteSearchInput');
-        if (input) {
-          input.value = '';
-          setTimeout(() => input.focus(), 50);
-        }
-      } else {
-        closeCommandPalette();
-      }
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function closeCommandPalette() {
-      const modal = document.getElementById('commandPaletteModal');
-      if (modal) {
-        if (typeof ModalManager !== 'undefined') {
-          ModalManager.close('commandPaletteModal');
-        } else {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
-        }
-      }
-    }
-
-    function paletteNavigate(view) {
-      switchMainView(view);
-      closeCommandPalette();
-    }
-
-    function paletteSetSub(lang) {
-      if (typeof setSubtitlePreference === 'function') {
-        setSubtitlePreference(lang);
-      }
-      closeCommandPalette();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const palInput = document.getElementById('paletteSearchInput');
-      const globInput = document.getElementById('globalSearchInput');
-      if (palInput && globInput) {
-        palInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            globInput.value = palInput.value;
-            globInput.dispatchEvent(new Event('input', { bubbles: true }));
-            closeCommandPalette();
-          }
-        });
-      }
-      const palModal = document.getElementById('commandPaletteModal');
-      if (palModal) {
-        palModal.addEventListener('click', (e) => {
-          if (e.target === palModal) closeCommandPalette();
-        });
       }
     });
   </script>
-
-  
-  <!-- DOCKED FEEDBACK PILL (SCREENSHOT 1 FAITHFUL REPRODUCTION) -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-8 flex justify-end mt-12 mb-3">
-    <button id="fluentFeedbackPillBtn" onclick="openFeedbackModal()" class="fluent-feedback-pill">
-      <span>Feedback</span>
-      <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
-    </button>
-  </div>
-
-  <!-- ========================================================================= -->
-  <!-- MICROSOFT FLUENT 2 DARK FOOTER & DESIGN SYSTEM LINKS                      -->
-  <!-- ========================================================================= -->
-  <footer id="fluentFooter" class="border-t border-white/10 bg-[#080c14] text-slate-400 text-xs font-sans py-10 px-4 sm:px-8">
-    <div class="max-w-7xl mx-auto space-y-6">
-      
-      <div class="flex items-center gap-3">
-        <svg class="w-6 h-6 shrink-0" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="8" height="8" rx="2" fill="#0078d4"/>
-          <rect x="13" y="3" width="8" height="8" rx="2" fill="#50e6ff"/>
-          <rect x="3" y="13" width="8" height="8" rx="2" fill="#2b88d8"/>
-          <rect x="13" y="13" width="8" height="8" rx="2" fill="#005a9e"/>
-        </svg>
-        <span class="text-white font-bold text-sm tracking-tight">Microsoft Fluent 2 & Milkglass Architecture</span>
-      </div>
-
-      <!-- 4 Horizontal Links matching Screenshot 1 -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm font-semibold text-white">
-        <a href="#" class="hover:text-blue-400 transition-colors">Fluent 1</a>
-        <a href="#" class="hover:text-blue-400 transition-colors">Microsoft Design</a>
-        <a href="#" class="hover:text-blue-400 transition-colors">Inclusive Design</a>
-        <a href="#" class="hover:text-blue-400 transition-colors">Medium</a>
-      </div>
-
-      <!-- Bottom Micro Legal & Social Row -->
-      <div class="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-400">
-        <div class="flex items-center gap-4">
-          <!-- Social Icons (Medium, Facebook, Twitter) -->
-          <a href="#" class="hover:text-white transition-colors" title="Medium">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
-          </a>
-          <a href="#" class="hover:text-white transition-colors" title="Facebook">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-          </a>
-          <a href="#" class="hover:text-white transition-colors" title="Twitter">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z"/></svg>
-          </a>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <a href="#" onclick="openFeedbackModal(); return false;" class="hover:text-white transition-colors">Feedback</a>
-          <a href="#" class="hover:text-white transition-colors">Contact Microsoft</a>
-          <a href="#" class="hover:text-white transition-colors">Trademarks</a>
-          <a href="#" class="hover:text-white transition-colors">Terms of use</a>
-          <span>© Microsoft 2026</span>
-        </div>
-      </div>
-
-    </div>
-  </footer>
-
-
-  <!-- ========================================================================= -->
-  <!-- MODAL: FLUENT 2 FEEDBACK SUBMISSION                                       -->
-  <!-- ========================================================================= -->
-  <div id="fluentFeedbackModal" class="hidden fixed inset-0 z-50 items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
-    <div class="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-[#181d2a] border border-white/20 p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
-          <h3 class="text-sm font-bold text-white font-sans">Submit System Feedback</h3>
-        </div>
-        <button onclick="closeFeedbackModal()" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <p class="text-xs text-slate-300">
-        Help us optimize the Milkglass spatial UI and streaming performance across your devices.
-      </p>
-
-      <textarea 
-        rows="3" 
-        placeholder="Tell us about your experience..." 
-        class="w-full bg-black/40 border border-white/20 text-xs rounded-xl p-3 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 font-sans"
-      ></textarea>
-
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeFeedbackModal()" class="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs">
-          Close
-        </button>
-        <button onclick="submitFeedback()" class="px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow transition-all">
-          Submit Feedback
-        </button>
-      </div>
-    </div>
-  </div>
-
 
   <!-- APPLICATION ENGINE -->
   <script src="app.js"></script>
