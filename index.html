@@ -489,113 +489,49 @@
 </head>
 <body class="bg-[#040711] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-600 selection:text-white antialiased">
 
-  <!-- TOP FLOATING SPATIAL CONTROL BRIDGE (FLUENT 2 & APPLE SUBNAV HYBRID) -->
-  <header class="sticky top-0 z-40 w-full transition-all bg-[#0c101c]/95 border-b border-white/10 backdrop-blur-md">
-    <!-- Fluent 2 Master Chrome Bar (Strict Screenshot 1 Reproduction) -->
-    <div class="max-w-7xl mx-auto px-2.5 sm:px-6 py-2 flex items-center justify-between gap-1.5 sm:gap-4">
-      
-      <!-- Left: Drawer Icon & Fluent 2 Stylized Branding -->
-      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <button onclick="toggleCommandPalette()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 flex items-center justify-center transition-all border border-white/10 shrink-0" title="Open App Drawer">
-          <i data-lucide="menu" class="w-4 h-4"></i>
-        </button>
-        <a href="#" onclick="switchMainView('console'); return false;" class="flex items-center gap-1.5 group shrink-0">
-          <!-- Fluent 2 Geometry Logo Mark -->
-          <svg class="w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="8" height="8" rx="2" fill="#0078d4"/>
-            <rect x="13" y="3" width="8" height="8" rx="2" fill="#50e6ff"/>
-            <rect x="3" y="13" width="8" height="8" rx="2" fill="#2b88d8"/>
-            <rect x="13" y="13" width="8" height="8" rx="2" fill="#005a9e"/>
-          </svg>
-          <span class="text-xs sm:text-sm font-semibold tracking-tight text-white font-sans inline">Fluent 2</span>
-          <span class="text-slate-500 font-light hidden md:inline">|</span>
-          <span class="text-xs sm:text-sm font-bold tracking-tight text-white font-mono hidden md:inline">MILKGLASS</span>
-          <span class="hidden xl:inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SLA 99.99%
-          </span>
-        </a>
-      </div>
-
-      <!-- Center: Theme Toggle Pill (Authentic Screenshot 1 element, visible on mobile & desktop) -->
-      <div class="flex items-center shrink-0">
-        <button id="themeToggleBtn" onclick="toggleThemeMode()" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 text-[11px] sm:text-xs font-medium border border-white/10 transition-all shrink-0">
-          <i data-lucide="sun-moon" class="w-3.5 h-3.5 text-slate-300 shrink-0"></i>
-          <span class="inline">Theme</span>
-          <span class="w-6 sm:w-7 h-3.5 sm:h-4 rounded-full bg-white/20 p-0.5 flex items-center justify-end">
-            <span class="w-2.5 sm:w-3 h-2.5 sm:h-3 rounded-full bg-white"></span>
-          </span>
-        </button>
-      </div>
-
-      <!-- Right: Microsoft Authentic Employee Sign-in Pill Button (Authentic Screenshot 1 element) -->
-      <div class="flex items-center gap-2 shrink-0">
-        <button id="employeeSignInBtn" onclick="openEmployeeSignInModal()" class="px-2.5 sm:px-3.5 py-1.5 rounded-full bg-white hover:bg-slate-100 text-[#111625] font-semibold text-[11px] sm:text-xs flex items-center gap-1.5 sm:gap-2 shadow-sm transition-all active:scale-95 shrink-0" title="Corporate Single Sign-On">
-          <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 21 21">
-            <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-            <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-            <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-            <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-          </svg>
-          <span class="inline font-sans">Employee sign-in</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Apple-Style Sticky Subnav Bar (#globalnav style) -->
-    <div id="appleSubnavBar" class="border-t border-white/10 bg-[#141416]/95 px-3 sm:px-6 py-2">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+  <!-- TOP FLOATING SPATIAL CONTROL BRIDGE -->
+  <header class="sticky top-0 z-40 w-full transition-all bg-[#0a1020]/95 border-b border-white/10 backdrop-blur-md">
+    <!-- Subnav Bar -->
+    <div id="appleSubnavBar" class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         
-        <!-- Left: Product Identity -->
-        <div class="flex items-center gap-2">
+        <!-- Left: Product Identity & Mobile Action Row -->
+        <div class="flex items-center justify-between gap-3">
           <span class="text-sm sm:text-base font-bold text-white tracking-tight">Milkglass Pro</span>
-          <span class="text-[10px] text-slate-400 hidden sm:inline font-mono">AV1 Cinema Architecture</span>
-        </div>
-
-        <!-- Center: Spatial View Switcher Pills & Global Search Input -->
-        <div class="hidden md:flex items-center gap-3">
-          <!-- Global Search Input -->
-          <div class="relative w-40 lg:w-56">
-            <input 
-              type="text" 
-              id="globalSearchInput"
-              placeholder="Search catalog..." 
-              class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-11 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
-            >
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
-            <kbd onclick="toggleCommandPalette()" class="hidden sm:inline-block absolute right-2 top-1.5 text-[9px] font-mono px-1 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-slate-300 cursor-pointer transition-colors" title="Open Command Palette (Ctrl+K)">Ctrl+K</kbd>
-            <button id="clearSearchBtn" class="hidden absolute right-2 top-1.5 text-slate-400 hover:text-white">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          <div class="flex sm:hidden items-center gap-2">
+            <button onclick="scrollToExplore()" class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
+              Explore
+            </button>
+            <button onclick="launchFeaturedStream()" class="px-3.5 py-1.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-md shadow-blue-500/25 transition-all active:scale-95">
+              Watch Now
             </button>
           </div>
-
-          <!-- Subtitle Preference Toggle -->
-          <div class="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10 text-xs font-mono">
-            <button id="prefSubIndoBtn" onclick="setSubtitlePreference('id')" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white transition-all shadow-sm">ID</button>
-            <button id="prefSubEngBtn" onclick="setSubtitlePreference('en')" class="px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition-all">EN</button>
-          </div>
-
-          <!-- Spatial View Switcher Pills -->
-          <nav class="flex items-center gap-1 font-mono text-xs">
-            <button id="navBtnConsole" onclick="switchMainView('console')" class="px-3 py-1 rounded-lg text-white font-semibold bg-brand-600 shadow-sm flex items-center gap-1.5 transition-all">
-              <i data-lucide="tv" class="w-3.5 h-3.5"></i> Console
-            </button>
-            <button id="navBtnRadar" onclick="switchMainView('radar')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-              <i data-lucide="radar" class="w-3.5 h-3.5 text-blue-400"></i> Radar
-            </button>
-            <button id="navBtnCatalog" onclick="switchMainView('catalog')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-              <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-400"></i> Catalog
-            </button>
-            <button id="navBtnVault" onclick="switchMainView('vault')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-              <i data-lucide="archive" class="w-3.5 h-3.5 text-emerald-400"></i> Batch Vault
-            </button>
-            <button id="navBtnNetwork" onclick="switchMainView('network')" class="px-3 py-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium flex items-center gap-1.5 transition-all">
-              <i data-lucide="activity" class="w-3.5 h-3.5 text-amber-400"></i> CDN NOC
-            </button>
-          </nav>
         </div>
 
-        <!-- Right: Apple Dual Action Pills -->
-        <div class="flex items-center gap-2 shrink-0">
+        <!-- Center: Confirmed Manual Search Container -->
+        <div class="flex-1 max-w-xl w-full">
+          <div class="flex items-center gap-2">
+            <div class="relative flex-1">
+              <input 
+                type="text" 
+                id="globalSearchInput"
+                placeholder="Search catalog..." 
+                class="w-full bg-black/50 border border-white/15 text-xs rounded-xl pl-8 pr-8 py-2 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 transition-all font-sans"
+              >
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+              <button id="clearSearchBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <button id="globalSearchBtn" onclick="submitManualSearch()" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md shadow-brand-600/30 flex items-center gap-1.5 transition-all shrink-0 active:scale-95">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              <span>Search</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Desktop Dual Action Pills -->
+        <div class="hidden sm:flex items-center gap-2 shrink-0">
           <button onclick="scrollToExplore()" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95">
             Explore
           </button>
@@ -606,32 +542,8 @@
 
       </div>
 
-      <!-- Mobile Sub-Navigation Strip & Search -->
-      <div class="flex flex-col md:hidden gap-1.5 mt-2 px-1 text-[11px] font-mono">
-        <div class="flex items-center gap-2">
-          <div class="relative flex-1">
-            <input 
-              type="text" 
-              id="mobileSearchInput"
-              placeholder="Search catalog (Mobile)..." 
-              class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-3 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 font-sans"
-            >
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
-          </div>
-          <!-- Mobile Subtitle Preference Toggle -->
-          <div class="flex items-center gap-1 p-0.5 rounded-xl bg-black/40 border border-white/10 text-xs font-mono shrink-0">
-            <button onclick="setSubtitlePreference('id')" class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white transition-all shadow-sm">ID</button>
-            <button onclick="setSubtitlePreference('en')" class="px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-400 hover:text-white transition-all">EN</button>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-1 overflow-x-auto py-0.5">
-          <button onclick="switchMainView('console')" class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium shrink-0">Console</button>
-          <button onclick="switchMainView('radar')" class="px-2.5 py-1 rounded-lg bg-surface-card border border-white/10 text-slate-300 shrink-0">Radar</button>
-          <button onclick="switchMainView('catalog')" class="px-2.5 py-1 rounded-lg bg-surface-card border border-white/10 text-slate-300 shrink-0">Catalog</button>
-          <button onclick="switchMainView('vault')" class="px-2.5 py-1 rounded-lg bg-surface-card border border-white/10 text-emerald-400 shrink-0">Batch Vault</button>
-          <button onclick="switchMainView('network')" class="px-2.5 py-1 rounded-lg bg-surface-card border border-white/10 text-amber-400 shrink-0">NOC</button>
-        </div>
-      </div>
+      <!-- 5-Item Smart Recommendation Pills Strip Directly Below Search Bar -->
+      <div id="searchRecommendationsStrip" class="flex items-center sm:justify-center gap-1.5 overflow-x-auto pt-2 pb-0.5 text-xs font-mono"></div>
     </div>
   </header>
 
@@ -665,20 +577,23 @@
         <div class="absolute inset-0 bg-gradient-to-t from-[#040711] via-[#040711]/75 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-[#040711] via-[#040711]/60 to-transparent"></div>
 
-        <!-- Cinema Deck Content & Telemetry Split -->
-        <div class="relative z-10 p-5 sm:p-9 w-full flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <!-- Cinema Deck Content -->
+        <div class="relative z-10 p-5 sm:p-9 w-full flex flex-col justify-end">
           
-          <!-- Left Column: Media Dossier & Primary Controls -->
-          <div class="max-w-2xl space-y-3.5">
+          <!-- Media Dossier & Primary Controls Wrapper with Low-Fade Container -->
+          <div id="heroContent" class="max-w-2xl space-y-3.5 transition-opacity duration-300">
             <div class="flex items-center gap-2 flex-wrap font-mono">
               <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-brand-600 text-white flex items-center gap-1.5 uppercase tracking-wider shadow-md specular-rim border border-white/20">
-                <i data-lucide="sparkles" class="w-3 h-3"></i> Featured Media Spotlight
+                <i data-lucide="sparkles" class="w-3 h-3"></i> Ongoing Simulcast
               </span>
-              <span id="heroWatchabilityBadge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                STATUS: AVAILABLE
+              <span id="heroWatchabilityBadge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono">
+                Latest: Ingesting...
               </span>
-              <span id="heroScore" class="text-xs font-bold text-amber-300 flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-lg border border-white/15 font-mono">
-                <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i> 8.8 / 10
+              <span id="heroScore" class="text-xs font-bold text-amber-300 flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-lg border border-white/15 font-mono">
+                <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>8.8 / 10</span>
               </span>
             </div>
 
@@ -691,45 +606,16 @@
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
-              <button id="heroPlayBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold text-xs tracking-wide shadow-xl shadow-brand-600/40 flex items-center gap-2.5 transition-all specular-rim border border-white/20">
-                <i data-lucide="play" class="w-4 h-4 fill-white"></i> Launch Direct Stream (1080p FHD)
+              <button id="heroPlayBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold text-xs tracking-wide shadow-xl shadow-brand-600/40 flex items-center gap-2 transition-all specular-rim border border-white/20 active:scale-95">
+                <i data-lucide="play" class="w-4 h-4 fill-white"></i> Watch Now
               </button>
-              <button id="heroDetailBtn" class="px-4 py-2.5 rounded-xl bg-surface-card/90 hover:bg-surface-hover text-slate-200 border border-white/15 font-semibold text-xs tracking-wide flex items-center gap-2 transition-all specular-rim">
-                <i data-lucide="info" class="w-3.5 h-3.5"></i> Technical Dossier
+              <button id="heroDetailBtn" class="px-4 py-2.5 rounded-xl bg-surface-card/90 hover:bg-surface-hover text-slate-200 border border-white/15 font-semibold text-xs tracking-wide flex items-center gap-2 transition-all specular-rim active:scale-95">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Information
               </button>
             </div>
-          </div>
 
-          <!-- Right Column: Real-time Ingest HUD -->
-          <div class="hidden lg:flex flex-col gap-2 p-4 rounded-2xl lqd-card w-80 text-xs font-mono shrink-0 border border-white/15">
-            <div class="flex items-center justify-between border-b border-white/10 pb-2">
-              <span class="text-slate-400 uppercase text-[10px] tracking-wider font-semibold">Broadcast HUD</span>
-              <span class="text-emerald-400 flex items-center gap-1 text-[10px]">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE SYNC
-              </span>
-            </div>
-            <div class="space-y-1.5 pt-1 text-[11px]">
-              <div class="flex justify-between">
-                <span class="text-slate-400">Ingest Codec:</span>
-                <span class="text-slate-200 font-semibold">AV1 / H.264 High Profile</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Resolution:</span>
-                <span class="text-slate-200 font-semibold">1080p FHD Master (6.2 Mbps)</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Subtitle Engine:</span>
-                <span class="text-brand-400 font-semibold">Indonesian (Auto-Selected)</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Failover Guard:</span>
-                <span class="text-slate-200 font-semibold">7.5s Active Watchdog</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">AdShield:</span>
-                <span class="text-emerald-400 font-semibold">Tamper-Locked Kernel</span>
-              </div>
-            </div>
+            <!-- Cyclical Carousel Progress Dots -->
+            <div id="heroCarouselDots" class="flex items-center gap-1.5 pt-2"></div>
           </div>
         </div>
       </section>

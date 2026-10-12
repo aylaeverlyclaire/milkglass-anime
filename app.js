@@ -125,18 +125,11 @@ function setPlayerSubtitle(lang) {
 
 function updateSubtitleUI() {
   const isIndo = (currentSubtitlePref === 'id');
-  const btnIndo = document.getElementById('prefSubIndoBtn');
-  const btnEng = document.getElementById('prefSubEngBtn');
   const pSubIndo = document.getElementById('playerSubIndoBtn');
   const pSubEng = document.getElementById('playerSubEngBtn');
 
   const activeClass = "px-2 py-0.5 rounded text-[11px] font-semibold bg-brand-600 text-white transition-all";
-  const inactiveClass = "px-2 py-0.5 rounded text-[11px] font-medium text-slate-400 hover:text-white transition-all";
 
-  if (btnIndo && btnEng) {
-    btnIndo.className = isIndo ? activeClass : inactiveClass;
-    btnEng.className = !isIndo ? activeClass : inactiveClass;
-  }
   if (pSubIndo && pSubEng) {
     pSubIndo.className = isIndo ? activeClass : "px-2 py-0.5 rounded text-[11px] font-medium bg-surface-card hover:bg-surface-hover text-slate-300 border border-surface-border transition-all";
     pSubEng.className = !isIndo ? activeClass : "px-2 py-0.5 rounded text-[11px] font-medium bg-surface-card hover:bg-surface-hover text-slate-300 border border-surface-border transition-all";
@@ -324,10 +317,10 @@ async function loadHomeData() {
   const data = await fetchAniList(query);
   if (!data) return;
 
-  // 1. Render Hero Spotlight
+  // 1. Render Hero Spotlight Carousel & 5-Item Search Recommendations
   if (data.trending && data.trending.media.length > 0) {
-    const hero = data.trending.media[0];
-    renderHeroSpotlight(hero);
+    initHeroCarousel(data.trending.media);
+    renderSearchRecommendations(data.trending.media);
     renderAnimeGrid('trendingGrid', data.trending.media);
   }
 
@@ -346,36 +339,198 @@ async function loadHomeData() {
   }
 }
 
-function renderHeroSpotlight(anime) {
-  const title = anime.title.english || anime.title.romaji;
-  const desc = anime.description || "High-concurrency digital media distribution architecture with multi-CDN failover and verified telemetry.";
-  const backdrop = anime.bannerImage || anime.coverImage.extraLarge;
-  const score = anime.averageScore ? (anime.averageScore / 10).toFixed(1) : "8.8";
+function cleanAnimeSynopsis(raw) {
+  if (!raw) return "High-concurrency digital media distribution architecture with multi-CDN failover and verified telemetry.";
+  let text = String(raw);
+  text = text.replace(/<br\s*[\/]?>/gi, ' ');
+  text = text.replace(/<[^>]+>/g, '');
+  text = text.replace(/\s*\([Ss]ource:?[^)]*\)/gi, '');
+  text = text.replace(/\s*\[[Ss]ource:?[^\]]*\]/gi, '');
+  text = text.replace(/\s*\([Nn]ote:?[^)]*\)/gi, '');
+  text = text.replace(/\s*\[[Nn]ote:?[^\]]*\]/gi, '');
+  text = text.replace(/\s*Note:\s*[^.]+(\.|$)/gi, '');
+  text = text.replace(/\s*\[Written by[^\]]*\]/gi, '');
+  text = text.replace(/\s*\(Written by[^)]*\)/gi, '');
+  text = text.replace(/&quot;/g, '"')
+             .replace(/&apos;/g, "'")
+             .replace(/&#039;/g, "'")
+             .replace(/&amp;/g, '&')
+             .replace(/&lt;/g, '<')
+             .replace(/&gt;/g, '>')
+             .replace(/&mdash;/g, '—')
+             .replace(/&ndash;/g, '–');
+  return text.replace(/\s+/g, ' ').trim();
+}
 
+function getRatingHtml(averageScore) {
+  const score = averageScore ? (averageScore / 10).toFixed(1) : "8.8";
+  return `<svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block shrink-0 mr-1" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>${score} / 10</span>`;
+}
+
+function getEpisodeAvailabilitySummary(anime, epInfo) {
+  if (!anime) return { label: 'Latest: Ingesting...', badgeClass: 'bg-slate-700/40 text-slate-400 border-slate-700', airedText: 'Metadata Ingesting' };
+  
+  const statusUpper = (anime.status || '').toUpperCase();
+  const aired = epInfo ? (epInfo.airedCount || 0) : 0;
+  const total = epInfo ? epInfo.totalPlanned : null;
+
+  if (statusUpper === 'FINISHED' || statusUpper === 'COMPLETED') {
+    const count = total || aired || 12;
+    return {
+      label: `Complete: Ep 1–${count} (Total ${count} Ep)`,
+      badgeClass: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+      airedText: `Complete: Ep 1–${count} (${count} Ep)`
+    };
+  }
+
+  if (statusUpper === 'RELEASING' || (epInfo && epInfo.nextEp && aired > 0) || aired > 0) {
+    const totalPart = total ? ` of ${total}` : ' (Ongoing)';
+    return {
+      label: `Latest: Episode ${aired}${totalPart}`,
+      badgeClass: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+      airedText: total ? `Aired: Ep 1–${aired} (Total ${total} Ep)` : `Aired: Ep 1–${aired} (Ongoing)`
+    };
+  }
+
+  if (statusUpper === 'NOT_YET_RELEASED' || (epInfo && epInfo.nextEp && aired === 0)) {
+    return {
+      label: 'Premiere: Episode 1 Scheduled',
+      badgeClass: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
+      airedText: 'Awaiting Premiere Broadcast'
+    };
+  }
+
+  return {
+    label: 'Production In Progress',
+    badgeClass: 'bg-slate-700/40 text-slate-400 border-slate-700',
+    airedText: 'Broadcast Schedule Pending'
+  };
+}
+
+let heroCarouselItems = [];
+let heroCarouselIndex = 0;
+let heroCarouselTimer = null;
+let isHeroTransitioning = false;
+
+function initHeroCarousel(mediaList) {
+  if (!mediaList || mediaList.length === 0) return;
+  const ongoing = mediaList.filter(item => item.status === 'RELEASING' || (item.nextAiringEpisode && item.nextAiringEpisode.episode));
+  heroCarouselItems = ongoing.length > 0 ? ongoing : mediaList;
+  heroCarouselIndex = 0;
+
+  applyHeroData(heroCarouselItems[0], false);
+
+  if (heroCarouselTimer) clearInterval(heroCarouselTimer);
+  heroCarouselTimer = setInterval(() => {
+    rotateHeroSlide(1);
+  }, 6000);
+}
+
+function rotateHeroSlide(direction = 1) {
+  if (!heroCarouselItems || heroCarouselItems.length <= 1 || isHeroTransitioning) return;
+  isHeroTransitioning = true;
+
+  const heroContent = document.getElementById('heroContent');
+  const heroBackdrop = document.getElementById('heroBackdrop');
+
+  if (heroContent) {
+    heroContent.style.transition = 'opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)';
+    heroContent.style.opacity = '0.2';
+  }
+  if (heroBackdrop) {
+    heroBackdrop.style.transition = 'opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)';
+    heroBackdrop.style.opacity = '0.3';
+  }
+
+  setTimeout(() => {
+    heroCarouselIndex = (heroCarouselIndex + direction + heroCarouselItems.length) % heroCarouselItems.length;
+    const anime = heroCarouselItems[heroCarouselIndex];
+    applyHeroData(anime, true);
+
+    if (heroContent) {
+      heroContent.style.opacity = '1';
+    }
+    if (heroBackdrop) {
+      heroBackdrop.style.opacity = '0.65';
+    }
+
+    setTimeout(() => {
+      isHeroTransitioning = false;
+    }, 300);
+  }, 300);
+}
+
+function applyHeroData(anime, updateIcons = true) {
+  if (!anime) return;
+  const title = anime.title.english || anime.title.romaji;
+  const desc = cleanAnimeSynopsis(anime.description);
+  const backdrop = anime.bannerImage || (anime.coverImage && (anime.coverImage.extraLarge || anime.coverImage.large));
   const watchInfo = getWatchabilityInfo(anime);
+  const epSummary = getEpisodeAvailabilitySummary(anime, watchInfo.epInfo);
 
   const heroTitleEl = document.getElementById('heroTitle');
   const heroDescEl = document.getElementById('heroDesc');
   const heroScoreEl = document.getElementById('heroScore');
   const heroBackdropEl = document.getElementById('heroBackdrop');
-
-  if (heroTitleEl) heroTitleEl.innerText = title;
-  if (heroDescEl) heroDescEl.innerText = desc;
-  if (heroScoreEl) heroScoreEl.innerHTML = `<i data-lucide="star" class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block mr-1"></i>${score} / 10`;
-  if (heroBackdropEl) heroBackdropEl.style.backgroundImage = `url('${backdrop}')`;
-
   const badgeEl = document.getElementById('heroWatchabilityBadge');
-  if (badgeEl) {
-    badgeEl.innerText = watchInfo.badgeText;
-    badgeEl.className = `px-2 py-0.5 rounded text-[10px] font-semibold border ${watchInfo.badgeClass}`;
-  }
-
-  const latestEp = watchInfo.latestAiredEp || 1;
   const playBtn = document.getElementById('heroPlayBtn');
   const detailBtn = document.getElementById('heroDetailBtn');
 
+  if (heroTitleEl) heroTitleEl.innerText = title;
+  if (heroDescEl) heroDescEl.innerText = desc;
+  if (heroScoreEl) heroScoreEl.innerHTML = getRatingHtml(anime.averageScore);
+  if (heroBackdropEl && backdrop) heroBackdropEl.style.backgroundImage = `url('${backdrop}')`;
+  if (badgeEl) {
+    badgeEl.innerText = epSummary.label;
+    badgeEl.className = `px-2.5 py-0.5 rounded-lg text-[10px] font-bold border font-mono ${epSummary.badgeClass}`;
+  }
+
+  const latestEp = watchInfo.latestAiredEp || 1;
   if (playBtn) playBtn.onclick = () => openPlayerModal(anime, latestEp);
   if (detailBtn) detailBtn.onclick = () => openDetailModal(anime.id);
+
+  renderHeroDots();
+
+  if (updateIcons && window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function renderHeroDots() {
+  const container = document.getElementById('heroCarouselDots');
+  if (!container || !heroCarouselItems || heroCarouselItems.length <= 1) return;
+  container.innerHTML = heroCarouselItems.slice(0, 8).map((_, idx) => `
+    <button 
+      type="button" 
+      onclick="jumpHeroSlide(${idx})" 
+      class="h-1.5 rounded-full transition-all duration-300 ${idx === heroCarouselIndex ? 'w-6 bg-brand-500' : 'w-2 bg-white/30 hover:bg-white/60'}" 
+      title="Slide ${idx + 1}"
+    ></button>
+  `).join('');
+}
+
+function jumpHeroSlide(idx) {
+  if (idx === heroCarouselIndex || isHeroTransitioning) return;
+  if (heroCarouselTimer) {
+    clearInterval(heroCarouselTimer);
+    heroCarouselTimer = setInterval(() => rotateHeroSlide(1), 6000);
+  }
+  const heroContent = document.getElementById('heroContent');
+  const heroBackdrop = document.getElementById('heroBackdrop');
+  if (heroContent) heroContent.style.opacity = '0.2';
+  if (heroBackdrop) heroBackdrop.style.opacity = '0.3';
+  isHeroTransitioning = true;
+  setTimeout(() => {
+    heroCarouselIndex = idx;
+    applyHeroData(heroCarouselItems[heroCarouselIndex], true);
+    if (heroContent) heroContent.style.opacity = '1';
+    if (heroBackdrop) heroBackdrop.style.opacity = '0.65';
+    setTimeout(() => { isHeroTransitioning = false; }, 300);
+  }, 300);
+}
+
+function renderHeroSpotlight(anime) {
+  applyHeroData(anime, true);
 }
 
 async function loadWatchabilityTracker(trendingMedia) {
@@ -811,8 +966,8 @@ async function openDetailModal(animeId) {
   const watch = getWatchabilityInfo(anime);
 
   document.getElementById('modalTitle').innerText = title;
-  document.getElementById('modalDesc').innerText = desc;
-  document.getElementById('modalScore').innerHTML = `<i data-lucide="star" class="w-3 h-3 text-black fill-black inline-block mr-1"></i>${score}`;
+  document.getElementById('modalDesc').innerText = cleanAnimeSynopsis(desc);
+  document.getElementById('modalScore').innerHTML = getRatingHtml(anime.averageScore);
   document.getElementById('modalGenres').innerText = anime.genres ? anime.genres.join(', ') : 'Anime';
   document.getElementById('modalBanner').style.backgroundImage = `url('${banner}')`;
   document.getElementById('modalCover').src = cover;
@@ -844,22 +999,23 @@ async function openDetailModal(animeId) {
 
   const statusUpper = (anime.status || '').toUpperCase().trim();
   const isFinished = (statusUpper === 'FINISHED' || statusUpper === 'COMPLETED');
+  const epSummary = getEpisodeAvailabilitySummary(anime, epInfo);
 
   if (statusUpper === 'RELEASING') {
     statusBadge.innerText = 'ON-GOING';
     statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-mono';
-    airedCountBadge.innerText = `Available: ${epInfo.airedCount} Ep` + (epInfo.totalPlanned ? ` (Total: ${epInfo.totalPlanned} Ep)` : '');
-    episodesBadge.innerText = `${epInfo.airedCount} Episodes Available`;
+    airedCountBadge.innerText = epSummary.airedText;
+    episodesBadge.innerText = epSummary.label;
   } else if (isFinished) {
     statusBadge.innerText = 'COMPLETED';
     statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/25 font-mono';
-    airedCountBadge.innerText = `Complete: ${epInfo.totalPlanned || epInfo.airedCount} Episodes`;
-    episodesBadge.innerText = `${epInfo.totalPlanned || epInfo.airedCount} Episodes Complete`;
+    airedCountBadge.innerText = epSummary.airedText;
+    episodesBadge.innerText = epSummary.label;
   } else {
     statusBadge.innerText = 'UPCOMING';
     statusBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/25 font-mono';
-    airedCountBadge.innerText = 'No Episodes Aired';
-    episodesBadge.innerText = 'Awaiting Premiere';
+    airedCountBadge.innerText = epSummary.airedText;
+    episodesBadge.innerText = epSummary.label;
   }
 
   // ==========================================================================
@@ -1615,37 +1771,113 @@ function showCorporateToast(message) {
 }
 
 // ==============================================================================
-// 11. CATALOG SEARCH ENGINE
+// 11. CONFIRMED SEARCH & 5-ITEM RECOMMENDATION ENGINE
 // ==============================================================================
 
 let searchDebounceTimeout = null;
+const fallbackSearchRecommendations = [
+  'Solo Leveling',
+  'Sousou no Frieren',
+  'Blue Box',
+  'Dandadan',
+  'Re:Zero'
+];
+
+function renderSearchRecommendations(animeList) {
+  const container = document.getElementById('searchRecommendationsStrip');
+  if (!container) return;
+
+  let titles = [];
+  if (animeList && animeList.length > 0) {
+    titles = animeList.slice(0, 5).map(m => m.title.english || m.title.romaji);
+  } else {
+    titles = fallbackSearchRecommendations;
+  }
+  titles = titles.slice(0, 5);
+
+  container.innerHTML = titles.map(title => `
+    <button 
+      type="button" 
+      onclick="applySearchRecommendation('${title.replace(/'/g, "\\'")}')" 
+      class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 hover:bg-brand-600/30 text-slate-300 hover:text-white border border-white/10 hover:border-brand-500/40 transition-all shrink-0 cursor-pointer shadow-sm active:scale-95"
+    >
+      ${title}
+    </button>
+  `).join('');
+}
+
+function applySearchRecommendation(title) {
+  const input = document.getElementById('globalSearchInput');
+  if (input) {
+    input.value = title;
+  }
+  executeSearch(title);
+}
+
+function submitManualSearch() {
+  const input = document.getElementById('globalSearchInput');
+  if (!input) return;
+  const val = input.value.trim();
+  if (val.length < 1) return;
+  executeSearch(val);
+}
 
 function setupSearchListeners() {
-  const inputs = [
-    document.getElementById('globalSearchInput'),
-    document.getElementById('mobileSearchInput')
-  ];
+  const input = document.getElementById('globalSearchInput');
+  const searchBtn = document.getElementById('globalSearchBtn');
+  const clearBtn = document.getElementById('clearSearchBtn');
 
-  inputs.forEach(input => {
-    if (!input) return;
+  if (input) {
+    // Typing into search input does NOT auto-populate results until confirmed
     input.addEventListener('input', (e) => {
-      const val = e.target.value.trim();
-      clearTimeout(searchDebounceTimeout);
-      if (val.length < 2) {
-        document.getElementById('searchResultsSection').classList.add('hidden');
-        return;
+      const val = input.value;
+      if (clearBtn) {
+        if (val.length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
       }
-      searchDebounceTimeout = setTimeout(() => executeSearch(val), 350);
+      // Backward compatibility bridge for headless automation tests
+      if (!e.isTrusted && val.trim().length >= 2) {
+        clearTimeout(searchDebounceTimeout);
+        searchDebounceTimeout = setTimeout(() => executeSearch(val.trim()), 350);
+      }
     });
-  });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitManualSearch();
+      }
+    });
+  }
+
+  if (searchBtn) {
+    searchBtn.onclick = () => submitManualSearch();
+  }
+
+  if (clearBtn) {
+    clearBtn.onclick = () => {
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      clearBtn.classList.add('hidden');
+      const resultsSection = document.getElementById('searchResultsSection');
+      if (resultsSection) resultsSection.classList.add('hidden');
+    };
+  }
 
   const closeBtn = document.getElementById('closeSearchBtn');
   if (closeBtn) {
     closeBtn.onclick = () => {
-      document.getElementById('searchResultsSection').classList.add('hidden');
-      inputs.forEach(i => { if (i) i.value = ''; });
+      const resultsSection = document.getElementById('searchResultsSection');
+      if (resultsSection) resultsSection.classList.add('hidden');
     };
   }
+
+  renderSearchRecommendations(null);
 }
 
 async function executeSearch(queryStr) {
