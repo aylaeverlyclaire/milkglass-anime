@@ -25,10 +25,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
         super().end_headers()
 
+class ThreadingServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
 def main():
     os.chdir(DIRECTORY)
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
+    with ThreadingServer(("0.0.0.0", PORT), Handler) as httpd:
         print("=" * 60)
         print("    MILKGLASS MEDIA SERVICES - LOCAL GATEWAY SERVER        ")
         print("=" * 60)
