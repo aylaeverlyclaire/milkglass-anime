@@ -1882,12 +1882,12 @@ let currentDownloadResolution = '1080p';
 let currentBatchResolution = '1080p';
 
 // In-Memory API Cache & In-flight Deduplication (Strict Zero-Waste Network Guarantee)
-const apiCache = new Map();
-const pendingRequests = new Map();
+var apiCache = window.apiCache = new Map();
+var pendingRequests = window.pendingRequests = new Map();
 const API_CACHE_TTL = 300000; // 5 minutes cache TTL
 
 // Unified Master Clock Engine (Consolidates all countdown timers to 1 tick per second)
-const ClockEngine = {
+var ClockEngine = window.ClockEngine = {
   activeTargets: new Map(), // id -> { getTargetSecs: () => number, onTick: (remaining, el) => void }
   timerId: null,
 
@@ -1959,7 +1959,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Unified Modal Governance (Law of Identity A ≡ A)
-const ModalManager = {
+var ModalManager = window.ModalManager = {
   activeStack: [],
 
   open(modalId, onOpen) {

@@ -467,10 +467,10 @@ async function runHyperExtremeRegressionStressTest() {
     await evalJs(`closeDetailModal()`);
     await sleep(50);
   }
-  const activeClockTargets = await evalJs(`ClockEngine.activeTargets.size`);
+  const activeClockTargets = await evalJs(`(window.ClockEngine || ClockEngine).activeTargets.size`);
   console.log(" Active ClockEngine targets after cycling:", activeClockTargets);
   // All modal countdown targets must be cleanly unregistered
-  const hasModalCountdownLeak = await evalJs(`ClockEngine.activeTargets.has('modalUpcomingCountdown')`);
+  const hasModalCountdownLeak = await evalJs(`(window.ClockEngine || ClockEngine).activeTargets.has('modalUpcomingCountdown')`);
   if (hasModalCountdownLeak) {
     throw new Error("Memory Leak: modalUpcomingCountdown was not unregistered from ClockEngine upon close!");
   }
@@ -480,8 +480,8 @@ async function runHyperExtremeRegressionStressTest() {
   console.log(" Testing ApiCache query deduplication...");
   const cacheStats = await evalJs(`
     ({
-      cacheEntries: apiCache.size,
-      pendingCount: pendingRequests.size
+      cacheEntries: (window.apiCache || apiCache).size,
+      pendingCount: (window.pendingRequests || pendingRequests).size
     })
   `);
   console.log(" ApiCache status:", cacheStats);
