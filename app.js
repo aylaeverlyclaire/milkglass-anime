@@ -405,22 +405,18 @@ function cleanAnimeSynopsis(raw) {
   let text = String(raw);
   text = text.replace(/<br\s*[\/]?>/gi, ' ');
   text = text.replace(/<[^>]+>/g, '');
-  text = text.replace(/\s*(?:\[|\()?Source:?[^\])]*(?:\]|\))?/gi, '');
-  text = text.replace(/\s*(?:\[|\()?Note:?[^\])]*(?:\]|\))?/gi, '');
-  text = text.replace(/\s*Note:\s*[^.]+(\.|$)/gi, '');
-  text = text.replace(/\s*(?:\[|\()?Written by[^\])]*(?:\]|\))?/gi, '');
-  text = text.replace(/&quot;/g, '"')
-             .replace(/&apos;/g, "'")
-             .replace(/&#039;/g, "'")
-             .replace(/&#39;/g, "'")
-             .replace(/&#x27;/g, "'")
-             .replace(/&amp;/g, '&')
-             .replace(/&lt;/g, '<')
-             .replace(/&gt;/g, '>')
-             .replace(/&mdash;/g, '—')
-             .replace(/&ndash;/g, '–')
-             .replace(/&hellip;/g, '...')
-             .replace(/&nbsp;/g, ' ');
+  text = text.replace(/\s*(?:\[|\()?(?:Source|Note|Written by):?[^\])\n]*(?:\]|\))?/gi, '');
+  text = text.replace(/\s*(?:Source|Note|Written by):\s*[^.]+(\.|$)/gi, '');
+  text = text
+    .replace(/&rsquo;|&lsquo;|&#8217;|&#8216;|&#039;|&#39;|&apos;|&#x27;/g, "'")
+    .replace(/&rdquo;|&ldquo;|&#8220;|&#8221;|&quot;/g, '"')
+    .replace(/&mdash;|&#8212;/g, '—')
+    .replace(/&ndash;|&#8211;/g, '–')
+    .replace(/&hellip;|&#8230;/g, '...')
+    .replace(/&nbsp;|&#160;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
   return text.replace(/\s+/g, ' ').trim();
 }
 
@@ -477,7 +473,7 @@ let isHeroTransitioning = false;
 function initHeroCarousel(mediaList) {
   if (!mediaList || mediaList.length === 0) return;
   const ongoing = mediaList.filter(item => item.status === 'RELEASING' || (item.nextAiringEpisode && item.nextAiringEpisode.episode));
-  heroCarouselItems = ongoing.length > 0 ? ongoing : mediaList;
+  heroCarouselItems = (ongoing.length > 0 ? ongoing : mediaList).slice(0, 5);
   heroCarouselIndex = 0;
 
   applyHeroData(heroCarouselItems[0], false);
@@ -513,7 +509,7 @@ function rotateHeroSlide(direction = 1) {
       heroContent.style.opacity = '1';
     }
     if (heroBackdrop) {
-      heroBackdrop.style.opacity = '0.65';
+      heroBackdrop.style.opacity = '1';
     }
 
     setTimeout(() => {
@@ -524,7 +520,7 @@ function rotateHeroSlide(direction = 1) {
 
 function applyHeroData(anime, updateIcons = true) {
   if (!anime) return;
-  const title = anime.title.english || anime.title.romaji;
+  const title = (anime.title && (anime.title.english || anime.title.romaji)) || 'Featured Simulcast';
   const desc = cleanAnimeSynopsis(anime.description);
   const backdrop = anime.bannerImage || (anime.coverImage && (anime.coverImage.extraLarge || anime.coverImage.large));
   const watchInfo = getWatchabilityInfo(anime);
@@ -541,7 +537,13 @@ function applyHeroData(anime, updateIcons = true) {
   if (heroTitleEl) heroTitleEl.innerText = title;
   if (heroDescEl) heroDescEl.innerText = desc;
   if (heroScoreEl) heroScoreEl.innerHTML = getRatingHtml(anime.averageScore);
-  if (heroBackdropEl && backdrop) heroBackdropEl.style.backgroundImage = `url('${backdrop}')`;
+  if (heroBackdropEl) {
+    if (backdrop) {
+      heroBackdropEl.style.backgroundImage = `url('${backdrop}')`;
+    } else {
+      heroBackdropEl.style.backgroundImage = 'none';
+    }
+  }
   if (badgeEl) {
     badgeEl.innerText = epSummary.label;
     badgeEl.className = `px-2.5 py-0.5 rounded-lg text-[10px] font-bold border font-mono ${epSummary.badgeClass}`;
@@ -560,8 +562,11 @@ function applyHeroData(anime, updateIcons = true) {
 
 function renderHeroDots() {
   const container = document.getElementById('heroCarouselDots');
-  if (!container || !heroCarouselItems || heroCarouselItems.length <= 1) return;
-  container.innerHTML = heroCarouselItems.slice(0, 8).map((_, idx) => `
+  if (!container || !heroCarouselItems || heroCarouselItems.length <= 1) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = heroCarouselItems.map((_, idx) => `
     <button 
       type="button" 
       onclick="jumpHeroSlide(${idx})" 
@@ -572,7 +577,7 @@ function renderHeroDots() {
 }
 
 function jumpHeroSlide(idx) {
-  if (idx === heroCarouselIndex || isHeroTransitioning) return;
+  if (idx < 0 || idx >= heroCarouselItems.length || idx === heroCarouselIndex || isHeroTransitioning) return;
   if (heroCarouselTimer) {
     clearInterval(heroCarouselTimer);
     heroCarouselTimer = setInterval(() => rotateHeroSlide(1), 6000);
@@ -586,7 +591,7 @@ function jumpHeroSlide(idx) {
     heroCarouselIndex = idx;
     applyHeroData(heroCarouselItems[heroCarouselIndex], true);
     if (heroContent) heroContent.style.opacity = '1';
-    if (heroBackdrop) heroBackdrop.style.opacity = '0.65';
+    if (heroBackdrop) heroBackdrop.style.opacity = '1';
     setTimeout(() => { isHeroTransitioning = false; }, 300);
   }, 300);
 }
@@ -1049,13 +1054,13 @@ async function openDetailModal(animeId) {
 
   if (subIndoBadge && subEngBadge) {
     if (epInfo.airedCount > 0) {
-      subIndoBadge.innerText = "ID Sub: Verified";
+      subIndoBadge.innerText = "Subtitles: ID & EN Verified";
       subIndoBadge.className = "px-2 py-0.5 rounded text-[10px] font-semibold bg-brand-600/20 text-brand-300 border border-brand-500/30";
-      subEngBadge.innerText = "EN Sub: Verified";
+      subEngBadge.classList.add('hidden');
     } else {
-      subIndoBadge.innerText = "ID Sub: Pending Airing";
+      subIndoBadge.innerText = "Subtitles: Pending Airing";
       subIndoBadge.className = "px-2 py-0.5 rounded text-[10px] font-medium bg-surface-card text-slate-400 border border-surface-border";
-      subEngBadge.innerText = "EN Sub: Pending Airing";
+      subEngBadge.classList.add('hidden');
     }
   }
 
@@ -2031,6 +2036,7 @@ function hashCode(str) {
 
 window.addEventListener('DOMContentLoaded', () => {
   updateSubtitleUI();
+  initHeroCarousel(FALLBACK_ONGOING_ANIME);
   loadHomeData();
   setupSearchListeners();
 

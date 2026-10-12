@@ -564,7 +564,7 @@
       <!-- HERO CINEMATIC SPATIAL DECK -->
       <section id="heroSection" class="relative rounded-3xl overflow-hidden lqd-shell min-h-[380px] sm:min-h-[440px] flex items-end shadow-2xl border border-white/20">
         <!-- Ambient Art Projection Backdrop -->
-        <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-[0.65] scale-105"></div>
+        <div id="heroBackdrop" class="absolute inset-0 bg-cover bg-center transition-all duration-700 brightness-[0.65] scale-105" style="background-image: url('https://s4.anilist.co/file/anilistcdn/media/anime/banner/189123-s6R5wYx8G9uI.jpg');"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#040711] via-[#040711]/75 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-[#040711] via-[#040711]/60 to-transparent"></div>
 
@@ -578,7 +578,7 @@
                 <i data-lucide="sparkles" class="w-3 h-3"></i> Ongoing Simulcast
               </span>
               <span id="heroWatchabilityBadge" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono">
-                Latest: Ingesting...
+                Latest: Episode 3 of 25
               </span>
               <span id="heroScore" class="text-xs font-bold text-amber-300 flex items-center gap-1.5 bg-black/60 px-2.5 py-1 rounded-lg border border-white/15 font-mono">
                 <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -589,11 +589,11 @@
             </div>
 
             <h1 id="heroTitle" class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight">
-              Loading Media Asset...
+              Blue Box Season 2
             </h1>
             
             <p id="heroDesc" class="text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed max-w-xl">
-              High-concurrency digital media distribution architecture with multi-CDN failover and verified telemetry.
+              Taiki Inomata continues his journey in badminton while navigating his feelings for Chinatsu Kano as high school tournament season reaches peak intensity.
             </p>
 
             <div class="flex flex-wrap items-center gap-3 pt-2">
@@ -606,7 +606,13 @@
             </div>
 
             <!-- Cyclical Carousel Progress Dots -->
-            <div id="heroCarouselDots" class="flex items-center gap-1.5 pt-2"></div>
+            <div id="heroCarouselDots" class="flex items-center gap-1.5 pt-2">
+              <button type="button" onclick="jumpHeroSlide(0)" class="h-1.5 rounded-full transition-all duration-300 w-6 bg-brand-500" title="Slide 1"></button>
+              <button type="button" onclick="jumpHeroSlide(1)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 2"></button>
+              <button type="button" onclick="jumpHeroSlide(2)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 3"></button>
+              <button type="button" onclick="jumpHeroSlide(3)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 4"></button>
+              <button type="button" onclick="jumpHeroSlide(4)" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60" title="Slide 5"></button>
+            </div>
           </div>
         </div>
       </section>
@@ -1512,8 +1518,11 @@
             <div class="flex items-center gap-2 flex-wrap font-mono">
               <span id="modalStatusBadge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-600 text-white">RELEASING</span>
               <span id="modalEpisodesBadge" class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 border border-white/10 text-slate-300">25 Episodes</span>
-              <span id="modalScore" class="text-xs font-bold text-amber-300 flex items-center gap-1 font-mono">
-                <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i> 8.8
+              <span id="modalScore" class="text-xs font-bold text-amber-300 flex items-center gap-1.5 font-mono">
+                <svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400 inline-block shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span>8.8 / 10</span>
               </span>
             </div>
             <h2 id="modalTitle" class="text-lg sm:text-xl font-bold text-white">Anime Title</h2>
