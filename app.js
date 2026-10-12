@@ -405,15 +405,17 @@ function cleanAnimeSynopsis(raw) {
   let text = String(raw);
   text = text.replace(/<br\s*[\/]?>/gi, ' ');
   text = text.replace(/<[^>]+>/g, '');
-  text = text.replace(/\s*(?:\[|\()?(?:Source|Note|Written by):?[^\])\n]*(?:\]|\))?/gi, '');
-  text = text.replace(/\s*(?:Source|Note|Written by):\s*[^.]+(\.|$)/gi, '');
+  text = text.replace(/\s*[\(\[](?:Source|Note|Written by):?[^\)\]]*[\)\]]/gi, '');
+  text = text.replace(/\s*(?:Source|Note|Written by):\s*[^.\n\r]+(?:\.|$)/gi, '');
   text = text
-    .replace(/&rsquo;|&lsquo;|&#8217;|&#8216;|&#039;|&#39;|&apos;|&#x27;/g, "'")
-    .replace(/&rdquo;|&ldquo;|&#8220;|&#8221;|&quot;/g, '"')
-    .replace(/&mdash;|&#8212;/g, '—')
-    .replace(/&ndash;|&#8211;/g, '–')
-    .replace(/&hellip;|&#8230;/g, '...')
-    .replace(/&nbsp;|&#160;/g, ' ')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&rsquo;|&lsquo;|&apos;/g, "'")
+    .replace(/&rdquo;|&ldquo;|&quot;/g, '"')
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
+    .replace(/&hellip;/g, '...')
+    .replace(/&nbsp;/g, ' ')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&');
@@ -584,8 +586,14 @@ function jumpHeroSlide(idx) {
   }
   const heroContent = document.getElementById('heroContent');
   const heroBackdrop = document.getElementById('heroBackdrop');
-  if (heroContent) heroContent.style.opacity = '0.2';
-  if (heroBackdrop) heroBackdrop.style.opacity = '0.3';
+  if (heroContent) {
+    heroContent.style.transition = 'opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)';
+    heroContent.style.opacity = '0.2';
+  }
+  if (heroBackdrop) {
+    heroBackdrop.style.transition = 'opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)';
+    heroBackdrop.style.opacity = '0.3';
+  }
   isHeroTransitioning = true;
   setTimeout(() => {
     heroCarouselIndex = idx;
@@ -1856,7 +1864,9 @@ function renderSearchRecommendations(animeList) {
 
   let titles = [];
   if (animeList && animeList.length > 0) {
-    titles = animeList.slice(0, 5).map(m => m.title.english || m.title.romaji).filter(Boolean);
+    titles = Array.from(new Set(
+      animeList.map(m => (m.title && (m.title.english || m.title.romaji)) || '').filter(Boolean)
+    ));
   }
   if (titles.length === 0) {
     titles = fallbackSearchRecommendations;
@@ -1880,8 +1890,12 @@ function renderSearchRecommendations(animeList) {
 
 function applySearchRecommendation(title) {
   const input = document.getElementById('globalSearchInput');
+  const clearBtn = document.getElementById('clearSearchBtn');
   if (input) {
     input.value = title;
+  }
+  if (clearBtn && title) {
+    clearBtn.classList.remove('hidden');
   }
   executeSearch(title);
 }
