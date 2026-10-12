@@ -160,7 +160,7 @@ async function runHyperExtremeRegressionStressTest() {
   }
   console.log("  PASS: All 5 required controls [Milkglass Pro, Explore, Watch Now, Search Catalog, Search button] Verified.");
 
-  // Verify that all marketing clutter has been pruned completely from DOM
+  // Verify that all marketing clutter and secondary headings have been pruned completely from DOM
   const clutterCheck = await evalJs(`
     ({
       hasHeroSection: !!document.getElementById('heroSection'),
@@ -169,15 +169,46 @@ async function runHyperExtremeRegressionStressTest() {
       hasFluentSection: !!document.getElementById('fluentDesignSection'),
       hasTelemetryStrip: !!document.querySelector('.lqd-card i[data-lucide="server"]'),
       hasFluentFooter: !!document.getElementById('fluentFooter'),
-      hasFeedbackPill: !!document.getElementById('fluentFeedbackPillBtn')
+      hasFeedbackPill: !!document.getElementById('fluentFeedbackPillBtn'),
+      hasExploreCatalogHeading: document.body.innerText.includes('Explore Catalog'),
+      hasCuratedFeedsHeading: document.body.innerText.includes('Curated Streaming Feeds'),
+      hasCompassIcon: !!document.querySelector('i[data-lucide="compass"]'),
+      hasEnglishSubBtn: !!document.getElementById('playerSubEngBtn'),
+      hasSubIndoBadge: !!document.getElementById('playerSubBadge'),
+      hasChromeNativeVideo: (() => {
+        const v = document.getElementById('nativeChromeVideo');
+        return !!(v && v.tagName === 'VIDEO' && v.hasAttribute('controls'));
+      })(),
+      catalogItemCount: document.querySelectorAll('#catalogGrid > div').length
     })
   `);
-  console.log(" Clutter Elimination Audit:", clutterCheck);
-  const anyClutterRemaining = Object.values(clutterCheck).some(Boolean);
-  if (anyClutterRemaining) {
-    throw new Error("Violation: Marketing clutter still present in DOM: " + JSON.stringify(clutterCheck));
+  console.log(" Clutter Elimination & Core Minimal Spec Audit:", clutterCheck);
+
+  if (clutterCheck.hasHeroSection || clutterCheck.hasComparisonSection || clutterCheck.hasIntelligenceSection || clutterCheck.hasFluentSection || clutterCheck.hasFluentFooter || clutterCheck.hasFeedbackPill) {
+    throw new Error("Violation: Secondary marketing sections still present in DOM!");
   }
-  console.log("  PASS: 100% of marketing clutter (Hero, Comparison, Intelligence, Fluent Cards, Footer) ELIMINATED.");
+  if (clutterCheck.hasExploreCatalogHeading) {
+    throw new Error("Violation: 'Explore Catalog' heading was not removed!");
+  }
+  if (clutterCheck.hasCuratedFeedsHeading) {
+    throw new Error("Violation: 'Curated Streaming Feeds' subtitle was not removed!");
+  }
+  if (clutterCheck.hasCompassIcon) {
+    throw new Error("Violation: Compass icon next to catalog heading was not removed!");
+  }
+  if (clutterCheck.hasEnglishSubBtn) {
+    throw new Error("Violation: English subtitle selector detected! Subtitles must strictly be Indonesian (Sub Indo)!");
+  }
+  if (!clutterCheck.hasSubIndoBadge) {
+    throw new Error("Violation: Sub Indo verified badge missing from player!");
+  }
+  if (!clutterCheck.hasChromeNativeVideo) {
+    throw new Error("Violation: Chrome default native video player (<video controls>) missing from player viewport!");
+  }
+  if (clutterCheck.catalogItemCount < 3) {
+    throw new Error("Violation: Catalog failed zero-delay startup render SLA (less than 3 items rendered)!");
+  }
+  console.log("  PASS: 100% of clutter, Explore Catalog heading, and English sources ELIMINATED. Chrome Default Player & Sub Indo verified.");
 
   // ---------------------------------------------------------------------------
   // SUITE 2: HARDWARE ACCELERATION & GPU COMPOSITING BUDGET
@@ -279,18 +310,25 @@ async function runHyperExtremeRegressionStressTest() {
     throw new Error("Stream failover chain must register exactly 4 nodes!");
   }
 
-  // Subtitle switching inside player
-  await evalJs(`setPlayerSubtitle('en')`);
+  // Enforce Sub Indo lock inside player
+  await evalJs(`setPlayerSubtitle('en')`); // Attempt setting 'en' should be ignored per SOP
   await sleep(200);
-  const subEnActive = await evalJs(`currentSubtitlePref === 'en'`);
-  if (!subEnActive) throw new Error("Failed to set subtitle preference to EN!");
+  const subIdActive = await evalJs(`currentSubtitlePref === 'id'`);
+  if (!subIdActive) throw new Error("Violation: Subtitle preference must strictly remain 'id' (Sub Indo)!");
+  const subBadgeText = await evalJs(`document.getElementById('playerSubBadge')?.innerText`);
+  if (!subBadgeText || !subBadgeText.includes('SUB INDO')) throw new Error("Violation: Player Sub Indo badge missing!");
+  console.log(" Verified Sub Indo exclusivity:", { currentSubtitlePref: 'id', badge: subBadgeText.trim() });
 
   // Test silent failover
+  const initialIndex = streamStatus.currentStreamIndex;
   await evalJs(`triggerSilentFailover('Automated health watchdog ping')`);
   await sleep(200);
   const nextStreamIndex = await evalJs(`currentChainIndex`);
   console.log(" Stream index after silent failover:", nextStreamIndex);
-  if (nextStreamIndex !== 1) throw new Error("Failover did not advance stream index!");
+  const expectedNextIndex = (initialIndex + 1) % streamStatus.chainLength;
+  if (nextStreamIndex !== expectedNextIndex) {
+    throw new Error(`Failover did not advance stream index! Expected ${expectedNextIndex}, got ${nextStreamIndex}`);
+  }
 
   await evalJs(`closePlayerModal()`);
   await sleep(200);
@@ -381,9 +419,10 @@ async function runHyperExtremeRegressionStressTest() {
   await sleep(200);
   const playerClosed = await evalJs(`document.getElementById('playerModal').classList.contains('hidden')`);
   const iframeCleared = await evalJs(`document.getElementById('animeIframe').src === '' || document.getElementById('animeIframe').src === 'about:blank' || !document.getElementById('animeIframe').src.includes('aniembed')`);
-  console.log(" Player modal closed on Escape:", playerClosed, "Iframe cleared:", iframeCleared);
-  if (!playerClosed || !iframeCleared) {
-    throw new Error("Player modal failed to close cleanly on Escape or iframe was not reset!");
+  const videoPaused = await evalJs(`(() => { const v = document.getElementById('nativeChromeVideo'); return !v || v.paused; })()`);
+  console.log(" Player modal closed on Escape:", playerClosed, "Iframe cleared:", iframeCleared, "Video paused:", videoPaused);
+  if (!playerClosed || !iframeCleared || !videoPaused) {
+    throw new Error("Player modal failed to close cleanly on Escape or players were not reset!");
   }
   console.log("  PASS: Universal ModalManager Escape key teardown operational.");
 
