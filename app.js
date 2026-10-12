@@ -418,14 +418,14 @@ async function loadWatchabilityTracker(trendingMedia) {
     const aired = watch.epInfo.airedCount;
 
     const card = document.createElement('div');
-    card.className = "p-3 rounded-xl liquid-glass-interactive flex gap-3 shadow-sm";
+    card.className = "p-3 rounded-xl fluent-mica-card flex gap-3 shadow-sm";
 
     const chronoBlock = watch.countdownText 
       ? `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-amber-400"></i> ${watch.countdownText}</span>` 
       : '<span class="text-slate-400 font-mono text-[10px]">Series Completed</span>';
 
     card.innerHTML = `
-      <img src="${cover}" loading="lazy" decoding="async" class="w-14 h-22 rounded-lg object-cover border border-white/10 shrink-0 cursor-pointer" onclick="openDetailModal(${anime.id})">
+      <img src="${cover}" alt="${title}" loading="lazy" decoding="async" class="w-14 h-22 rounded-lg object-cover border border-white/10 shrink-0 cursor-pointer" onclick="openDetailModal(${anime.id})">
       <div class="flex-1 min-w-0 flex flex-col justify-between">
         <div class="space-y-1">
           <div class="flex items-center gap-1.5 flex-wrap font-mono">
@@ -436,9 +436,9 @@ async function loadWatchabilityTracker(trendingMedia) {
               ID Subtitles
             </span>
           </div>
-          <h4 class="text-xs sm:text-sm font-semibold text-white truncate cursor-pointer hover:text-brand-300 transition-colors" onclick="openDetailModal(${anime.id})">
+          <h3 class="text-xs sm:text-sm font-semibold text-white truncate cursor-pointer hover:text-brand-300 transition-colors" onclick="openDetailModal(${anime.id})">
             ${title}
-          </h4>
+          </h3>
           <p class="text-[11px] text-slate-400">
             ${aired > 0 ? `Episodes 1 to ${aired} Available` : 'Premiere Scheduled'}
           </p>
@@ -515,7 +515,7 @@ function renderAnimeGrid(containerId, animeList) {
     card.onclick = () => openDetailModal(anime.id);
 
     card.innerHTML = `
-      <div class="relative rounded-xl overflow-hidden aspect-[3/4] liquid-glass-panel shadow-md">
+      <div class="relative rounded-xl overflow-hidden aspect-[3/4] fluent-mica-card shadow-md">
         <img src="${cover}" alt="${title}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
           <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow-md specular-rim">
@@ -523,17 +523,17 @@ function renderAnimeGrid(containerId, animeList) {
           </div>
         </div>
         ${rawScore ? `
-          <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-black/75 backdrop-blur-sm text-amber-300 border border-white/10 flex items-center gap-1">
+          <div class="absolute top-2 left-2 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-black/85 text-amber-300 border border-white/10 flex items-center gap-1">
             <i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>
             <span>${rawScore}</span>
           </div>
         ` : ''}
-        <div class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-black/75 backdrop-blur-sm text-slate-200 border border-white/10">
+        <div class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-black/85 text-slate-200 border border-white/10">
           ${epBadge}
         </div>
       </div>
       <div class="space-y-0.5">
-        <h4 class="text-xs sm:text-sm font-semibold text-white group-hover:text-brand-300 transition-colors line-clamp-1">${title}</h4>
+        <h3 class="text-xs sm:text-sm font-semibold text-white group-hover:text-brand-300 transition-colors line-clamp-1">${title}</h3>
         <p class="text-[11px] text-slate-400 font-medium">${anime.genres ? anime.genres.slice(0, 2).join(' • ') : 'Anime'}</p>
       </div>
     `;
@@ -582,12 +582,12 @@ async function loadAiringCountdown() {
     const targetTime = item.airingAt;
 
     const card = document.createElement('div');
-    card.className = "flex items-center gap-3 p-3 rounded-xl liquid-glass-interactive cursor-pointer shadow-sm";
+    card.className = "flex items-center gap-3 p-3 rounded-xl fluent-mica-card cursor-pointer shadow-sm";
     card.onclick = () => openDetailModal(item.media.id);
 
     const timerId = `timer-${idx}`;
     card.innerHTML = `
-      <img src="${cover}" loading="lazy" decoding="async" class="w-12 h-18 rounded-lg object-cover border border-white/10 shrink-0">
+      <img src="${cover}" alt="${title}" loading="lazy" decoding="async" class="w-12 h-18 rounded-lg object-cover border border-white/10 shrink-0">
       <div class="flex-1 min-w-0 space-y-1">
         <div class="flex items-center gap-2 font-mono">
           <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
@@ -597,7 +597,7 @@ async function loadAiringCountdown() {
             Calculating...
           </span>
         </div>
-        <h4 class="text-xs sm:text-sm font-semibold text-white line-clamp-1">${title}</h4>
+        <h3 class="text-xs sm:text-sm font-semibold text-white line-clamp-1">${title}</h3>
         <p class="text-[11px] text-slate-400">${item.media.genres ? item.media.genres.slice(0, 2).join(' • ') : 'Anime'}</p>
       </div>
     `;

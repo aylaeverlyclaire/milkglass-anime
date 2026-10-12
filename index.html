@@ -89,87 +89,108 @@
       background-attachment: fixed;
     }
 
-    /* Master Liquidglass Architecture */
-    .lqd-shell {
-      background: rgba(10, 16, 32, 0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 
-        inset 0 1.5px 0 0 rgba(255, 255, 255, 0.30),
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.06),
-        0 24px 60px -12px rgba(0, 0, 0, 0.65);
+    /* Master Apple & Fluent 2 Material Tokens */
+    :root {
+      --fluent-mica-bg: #0c1424;
+      --fluent-mica-card: #0d1526;
+      --fluent-border: rgba(255, 255, 255, 0.08);
+      --fluent-border-hover: rgba(59, 130, 246, 0.40);
+      --apple-nav-bg: rgba(10, 16, 32, 0.82);
     }
 
-    .lqd-card {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(12, 19, 36, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.10);
+    /* Apple Liquid Glass Navigation Bridge (GPU-budgeted top-level chrome) */
+    .apple-glass-nav,
+    .lqd-shell {
+      background-color: var(--apple-nav-bg);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
-        0 10px 30px -6px rgba(0, 0, 0, 0.45);
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.28),
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
+        0 20px 48px -12px rgba(0, 0, 0, 0.70);
+      transform: translateZ(0); /* Hardware compositor promotion */
+    }
+
+    /* Microsoft Fluent 2 Solid & Mica Composite (Zero GPU Blur passes for 60fps on budget mobile) */
+    .fluent-mica-card,
+    .lqd-card,
+    .liquid-glass-panel,
+    .liquid-glass-interactive {
+      background-color: var(--fluent-mica-card);
+      background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 100%);
+      border: 1px solid var(--fluent-border);
+      box-shadow: 
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.14),
+        0 2px 4px 0 rgba(0, 0, 0, 0.20),
+        0 8px 20px -2px rgba(0, 0, 0, 0.38);
       transform: translateZ(0);
       will-change: transform, border-color, box-shadow;
-      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
     }
 
-    .lqd-card:hover {
-      transform: translateY(-3px) translateZ(0);
-      border-color: rgba(59, 130, 246, 0.45);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(16, 26, 48, 0.85);
+    .fluent-mica-card:hover,
+    .lqd-card:hover,
+    .liquid-glass-interactive:hover {
+      transform: translateY(-2.5px) translateZ(0);
+      background-color: #111a30;
+      border-color: var(--fluent-border-hover);
       box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.30),
-        0 16px 40px -4px rgba(0, 0, 0, 0.60),
-        0 0 24px 0 rgba(37, 99, 235, 0.15);
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
+        0 14px 32px -4px rgba(0, 0, 0, 0.60),
+        0 0 20px 0 rgba(37, 99, 235, 0.15);
     }
 
     .lqd-pill {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
     }
 
     .specular-rim {
       box-shadow: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.28);
     }
 
-    /* Compatibility classes for existing app.js selectors */
+    /* Fluent 2 Smoke (Modal Dimmer) & Acrylic (Modal Sheet) */
+    .fluent-smoke-backdrop {
+      background-color: rgba(0, 0, 0, 0.80);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .fluent-acrylic-sheet {
+      background-color: rgba(10, 16, 32, 0.90);
+      backdrop-filter: saturate(180%) blur(22px);
+      -webkit-backdrop-filter: saturate(180%) blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 
+        inset 0 1.5px 0 0 rgba(255, 255, 255, 0.32),
+        0 32px 72px -12px rgba(0, 0, 0, 0.85);
+    }
+
     .liquid-glass-chrome {
       background: rgba(10, 16, 32, 0.82);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-color: rgba(255, 255, 255, 0.12);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-color: rgba(255, 255, 255, 0.14);
       box-shadow: inset 0 1.5px 0 0 rgba(255, 255, 255, 0.25), 0 20px 48px -8px rgba(0, 0, 0, 0.65);
     }
-    .liquid-glass-panel {
-      background: rgba(12, 19, 36, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 10px 30px -4px rgba(0, 0, 0, 0.45);
-    }
+
     .liquid-glass-subtle {
-      background: rgba(15, 23, 42, 0.65);
+      background: rgba(15, 23, 42, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
     }
-    .liquid-glass-interactive {
-      background: rgba(12, 19, 36, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), 0 6px 20px -2px rgba(0, 0, 0, 0.35);
-      transform: translateZ(0);
-      will-change: transform, border-color;
-      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s ease, background 0.16s ease;
-    }
-    .liquid-glass-interactive:hover {
-      border-color: rgba(59, 130, 246, 0.40);
-      background: rgba(16, 26, 48, 0.85);
-      transform: translateY(-2px) translateZ(0);
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 12px 28px -2px rgba(0, 0, 0, 0.55);
+
+    /* Low-power & accessibility transparency fallbacks */
+    @media (prefers-reduced-transparency: reduce) {
+      .apple-glass-nav,
+      .fluent-acrylic-sheet,
+      .fluent-smoke-backdrop,
+      .lqd-shell {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: #070b14 !important;
+      }
     }
 
     /* Content Visibility Containment for 60fps scrolling */
@@ -360,7 +381,7 @@
             class="w-full bg-black/50 border border-white/10 text-xs rounded-xl pl-8 pr-12 py-1.5 text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all font-sans specular-rim"
           >
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"></i>
-          <kbd class="hidden sm:inline-block absolute right-2.5 top-1.5 text-[9px] font-mono px-1 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400 pointer-events-none">Ctrl+K</kbd>
+          <kbd onclick="toggleCommandPalette()" class="hidden sm:inline-block absolute right-2.5 top-1.5 text-[9px] font-mono px-1 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/10 text-slate-300 cursor-pointer transition-colors" title="Open Command Palette (Ctrl+K)">Ctrl+K</kbd>
           <button id="clearSearchBtn" class="hidden absolute right-2 top-1.5 text-slate-400 hover:text-white">
             <i data-lucide="x" class="w-3.5 h-3.5"></i>
           </button>
@@ -602,7 +623,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <i data-lucide="clock" class="w-4 h-4 text-blue-400"></i>
-            <h3 class="text-sm font-bold text-white font-mono uppercase">Upcoming Airing Countdown</h3>
+            <h2 class="text-sm font-bold text-white font-mono uppercase">Upcoming Airing Countdown</h2>
           </div>
         </div>
         <div id="countdownGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
@@ -630,7 +651,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2.5">
             <i data-lucide="flame" class="w-4 h-4 text-brand-400"></i>
-            <h3 class="text-sm font-bold text-white font-mono uppercase">Top Rated Enterprise Deliveries</h3>
+            <h2 class="text-sm font-bold text-white font-mono uppercase">Top Rated Enterprise Deliveries</h2>
           </div>
         </div>
         <div id="popularGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5"></div>
@@ -830,8 +851,8 @@
   <!-- ========================================================================= -->
   <!-- MODAL: SPATIAL VIDEO PLAYER VIEWPORT -->
   <!-- ========================================================================= -->
-  <div id="playerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-xl transition-all">
-    <div class="relative w-full max-w-5xl rounded-3xl lqd-shell border border-white/20 overflow-hidden flex flex-col max-h-[95vh] shadow-2xl">
+  <div id="playerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 fluent-smoke-backdrop transition-all">
+    <div class="relative w-full max-w-5xl rounded-3xl fluent-acrylic-sheet overflow-hidden flex flex-col max-h-[95vh] shadow-2xl">
       
       <!-- Player Header Bar -->
       <div class="px-4 sm:px-6 py-3 border-b border-white/10 flex items-center justify-between gap-3 bg-black/40">
@@ -1002,8 +1023,8 @@
   <!-- ========================================================================= -->
   <!-- MODAL: BATCH DISTRIBUTION ARCHIVE MODAL (COMPLETED ONLY) -->
   <!-- ========================================================================= -->
-  <div id="batchDownloadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-xl transition-all">
-    <div class="relative w-full max-w-4xl rounded-3xl lqd-shell border border-white/20 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl">
+  <div id="batchDownloadModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
+    <div class="relative w-full max-w-4xl rounded-3xl fluent-acrylic-sheet overflow-hidden flex flex-col max-h-[92vh] shadow-2xl">
       
       <!-- Batch Modal Header -->
       <div class="p-4 sm:p-6 border-b border-white/10 bg-black/40 flex items-center justify-between gap-3">
@@ -1101,8 +1122,8 @@
   <!-- ========================================================================= -->
   <!-- MODAL: TECHNICAL DOSSIER / ANIME SPECIFICATION -->
   <!-- ========================================================================= -->
-  <div id="detailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-xl transition-all">
-    <div class="relative w-full max-w-3xl rounded-3xl lqd-shell border border-white/20 overflow-hidden flex flex-col max-h-[92vh] shadow-2xl">
+  <div id="detailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 fluent-smoke-backdrop transition-all">
+    <div class="relative w-full max-w-3xl rounded-3xl fluent-acrylic-sheet overflow-hidden flex flex-col max-h-[92vh] shadow-2xl">
       
       <!-- Detail Banner -->
       <div class="relative h-44 sm:h-56 bg-surface-card overflow-hidden">
@@ -1190,6 +1211,66 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- COMMAND PALETTE MODAL (APPLE SPOTLIGHT & RAYCAST STYLE) -->
+  <!-- ========================================================================= -->
+  <div id="commandPaletteModal" class="hidden fixed inset-0 z-50 items-start justify-center pt-20 px-3 sm:px-6 fluent-smoke-backdrop transition-all">
+    <div class="relative w-full max-w-xl rounded-2xl fluent-acrylic-sheet overflow-hidden flex flex-col shadow-2xl border border-white/20">
+      <div class="p-3 sm:p-4 border-b border-white/10 flex items-center gap-3 bg-black/40">
+        <i data-lucide="search" class="w-5 h-5 text-brand-400"></i>
+        <input 
+          type="text" 
+          id="paletteSearchInput" 
+          placeholder="Type a query or select destination..." 
+          class="w-full bg-transparent text-sm text-white placeholder-slate-400 focus:outline-none font-sans"
+        >
+        <kbd class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-slate-300 border border-white/10">ESC</kbd>
+      </div>
+
+      <div class="p-3 sm:p-4 space-y-3 max-h-96 overflow-y-auto text-xs font-mono">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Quick Navigation</span>
+          <div class="mt-1.5 space-y-1">
+            <button onclick="paletteNavigate('console')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="tv" class="w-4 h-4 text-brand-400"></i> Stream Console</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">1</kbd>
+            </button>
+            <button onclick="paletteNavigate('radar')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="radar" class="w-4 h-4 text-blue-400"></i> Simulcast Radar</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">2</kbd>
+            </button>
+            <button onclick="paletteNavigate('catalog')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="layout-grid" class="w-4 h-4 text-indigo-400"></i> Full Catalog</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">3</kbd>
+            </button>
+            <button onclick="paletteNavigate('vault')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="archive" class="w-4 h-4 text-emerald-400"></i> Batch Distribution Vault</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">4</kbd>
+            </button>
+            <button onclick="paletteNavigate('network')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-amber-400"></i> CDN NOC Diagnostics</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">5</kbd>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-white/10">
+          <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Language Preference</span>
+          <div class="mt-1.5 space-y-1">
+            <button onclick="paletteSetSub('id')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Indonesian Subtitles</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">ID</kbd>
+            </button>
+            <button onclick="paletteSetSub('en')" class="w-full p-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white flex items-center justify-between transition-colors">
+              <span class="flex items-center gap-2"><i data-lucide="globe" class="w-4 h-4 text-blue-400"></i> English Subtitles</span>
+              <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-400">EN</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SPATIAL VIEW SWITCHER HELPER -->
   <script>
     function switchMainView(viewName) {
@@ -1221,6 +1302,74 @@
       const sec = document.getElementById('searchResultsSection');
       if (sec) sec.classList.add('hidden');
     }
+
+    // Global Shortcut Engine: Ctrl+K / Cmd+K / Esc
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        toggleCommandPalette();
+      } else if (e.key === 'Escape') {
+        closeCommandPalette();
+      }
+    });
+
+    function toggleCommandPalette() {
+      const modal = document.getElementById('commandPaletteModal');
+      if (!modal) return;
+      const isHidden = modal.classList.contains('hidden');
+      if (isHidden) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        const input = document.getElementById('paletteSearchInput');
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 50);
+        }
+      } else {
+        closeCommandPalette();
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCommandPalette() {
+      const modal = document.getElementById('commandPaletteModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function paletteNavigate(view) {
+      switchMainView(view);
+      closeCommandPalette();
+    }
+
+    function paletteSetSub(lang) {
+      if (typeof setSubtitlePreference === 'function') {
+        setSubtitlePreference(lang);
+      }
+      closeCommandPalette();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const palInput = document.getElementById('paletteSearchInput');
+      const globInput = document.getElementById('globalSearchInput');
+      if (palInput && globInput) {
+        palInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            globInput.value = palInput.value;
+            globInput.dispatchEvent(new Event('input', { bubbles: true }));
+            closeCommandPalette();
+          }
+        });
+      }
+      const palModal = document.getElementById('commandPaletteModal');
+      if (palModal) {
+        palModal.addEventListener('click', (e) => {
+          if (e.target === palModal) closeCommandPalette();
+        });
+      }
+    });
   </script>
 
   <!-- APPLICATION ENGINE -->
