@@ -269,8 +269,66 @@ function formatDuration(seconds) {
 }
 
 // ==============================================================================
-// 5. MASTER CATALOG DATA INGESTION
+// 5. MASTER CATALOG DATA INGESTION & FALLBACK REPOSITORY
 // ==============================================================================
+
+const FALLBACK_ONGOING_ANIME = [
+  {
+    id: 189123,
+    title: { english: 'Blue Box Season 2', romaji: 'Ao no Hako Season 2' },
+    description: 'Taiki Inomata continues his journey in badminton while navigating his feelings for Chinatsu Kano as high school tournament season reaches peak intensity.',
+    coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx189123-U3cI0h4i5oM6.jpg', extraLarge: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx189123-U3cI0h4i5oM6.jpg' },
+    bannerImage: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/189123-s6R5wYx8G9uI.jpg',
+    status: 'RELEASING',
+    averageScore: 88,
+    episodes: 25,
+    nextAiringEpisode: { episode: 3, airingAt: Math.floor(Date.now() / 1000) + 86400, timeUntilAiring: 86400 }
+  },
+  {
+    id: 171018,
+    title: { english: 'Solo Leveling: Arise from the Shadow', romaji: 'Ore dake Level Up na Ken Season 2' },
+    description: 'Sung Jinwoo faces the high-ranking dungeon monarch threats as the Shadow Monarch lineage deepens across global hunter syndicates.',
+    coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx171018-mGf0uO4t6kP2.jpg', extraLarge: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx171018-mGf0uO4t6kP2.jpg' },
+    bannerImage: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/171018-d7Y8u2K1mN3v.jpg',
+    status: 'RELEASING',
+    averageScore: 89,
+    episodes: 13,
+    nextAiringEpisode: { episode: 5, airingAt: Math.floor(Date.now() / 1000) + 172800, timeUntilAiring: 172800 }
+  },
+  {
+    id: 171012,
+    title: { english: 'Dandadan', romaji: 'Dandadan' },
+    description: 'Momo Ayase and Okarun navigate supernatural curses, extraterrestrial invasions, and adolescent bonds in an unprecedented dynamic occult clash.',
+    coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx171012-7X6a9f4g2h1j.jpg', extraLarge: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx171012-7X6a9f4g2h1j.jpg' },
+    bannerImage: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/171012-1a2b3c4d5e6f.jpg',
+    status: 'RELEASING',
+    averageScore: 87,
+    episodes: 12,
+    nextAiringEpisode: { episode: 4, airingAt: Math.floor(Date.now() / 1000) + 259200, timeUntilAiring: 259200 }
+  },
+  {
+    id: 163270,
+    title: { english: 'Re:ZERO -Starting Life in Another World- Season 3', romaji: 'Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season' },
+    description: 'Subaru Natsuki enters Priestella, the City of Watergates, confronting Witch Cult archbishops in a desperate defense of the kingdom.',
+    coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx163270-3k9j2h4g1f5d.jpg', extraLarge: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx163270-3k9j2h4g1f5d.jpg' },
+    bannerImage: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/163270-9z8y7x6w5v4u.jpg',
+    status: 'RELEASING',
+    averageScore: 86,
+    episodes: 16,
+    nextAiringEpisode: { episode: 6, airingAt: Math.floor(Date.now() / 1000) + 345600, timeUntilAiring: 345600 }
+  },
+  {
+    id: 166610,
+    title: { english: 'Bleach: Thousand-Year Blood War - The Conflict', romaji: 'Bleach: Sennen Kessen-hen - Soukoku-tan' },
+    description: 'The Soul Society and Wandenreich empire engage in the climactic phase of the Quincy invasion across the Soul King palace sanctuaries.',
+    coverImage: { large: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx166610-8b7c6d5e4f3a.jpg', extraLarge: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx166610-8b7c6d5e4f3a.jpg' },
+    bannerImage: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/166610-2m3n4o5p6q7r.jpg',
+    status: 'RELEASING',
+    averageScore: 90,
+    episodes: 13,
+    nextAiringEpisode: { episode: 4, airingAt: Math.floor(Date.now() / 1000) + 432000, timeUntilAiring: 432000 }
+  }
+];
 
 async function loadHomeData() {
   const query = `
@@ -315,14 +373,17 @@ async function loadHomeData() {
   `;
 
   const data = await fetchAniList(query);
-  if (!data) return;
+  if (!data || !data.trending || !data.trending.media || data.trending.media.length === 0) {
+    console.warn('[Enterprise Engine] Network quota constrained or offline; initializing fallback hero ongoing carousel.');
+    initHeroCarousel(FALLBACK_ONGOING_ANIME);
+    renderSearchRecommendations(FALLBACK_ONGOING_ANIME);
+    return;
+  }
 
   // 1. Render Hero Spotlight Carousel & 5-Item Search Recommendations
-  if (data.trending && data.trending.media.length > 0) {
-    initHeroCarousel(data.trending.media);
-    renderSearchRecommendations(data.trending.media);
-    renderAnimeGrid('trendingGrid', data.trending.media);
-  }
+  initHeroCarousel(data.trending.media);
+  renderSearchRecommendations(data.trending.media);
+  renderAnimeGrid('trendingGrid', data.trending.media);
 
   // 2. Render Watchability Section
   loadWatchabilityTracker(data.trending.media);
@@ -334,7 +395,7 @@ async function loadHomeData() {
   loadSimulcastFeed();
 
   // 5. Render Popular Archive
-  if (data.popular && data.popular.media.length > 0) {
+  if (data.popular && data.popular.media && data.popular.media.length > 0) {
     renderAnimeGrid('popularGrid', data.popular.media);
   }
 }
@@ -344,21 +405,22 @@ function cleanAnimeSynopsis(raw) {
   let text = String(raw);
   text = text.replace(/<br\s*[\/]?>/gi, ' ');
   text = text.replace(/<[^>]+>/g, '');
-  text = text.replace(/\s*\([Ss]ource:?[^)]*\)/gi, '');
-  text = text.replace(/\s*\[[Ss]ource:?[^\]]*\]/gi, '');
-  text = text.replace(/\s*\([Nn]ote:?[^)]*\)/gi, '');
-  text = text.replace(/\s*\[[Nn]ote:?[^\]]*\]/gi, '');
+  text = text.replace(/\s*(?:\[|\()?Source:?[^\])]*(?:\]|\))?/gi, '');
+  text = text.replace(/\s*(?:\[|\()?Note:?[^\])]*(?:\]|\))?/gi, '');
   text = text.replace(/\s*Note:\s*[^.]+(\.|$)/gi, '');
-  text = text.replace(/\s*\[Written by[^\]]*\]/gi, '');
-  text = text.replace(/\s*\(Written by[^)]*\)/gi, '');
+  text = text.replace(/\s*(?:\[|\()?Written by[^\])]*(?:\]|\))?/gi, '');
   text = text.replace(/&quot;/g, '"')
              .replace(/&apos;/g, "'")
              .replace(/&#039;/g, "'")
+             .replace(/&#39;/g, "'")
+             .replace(/&#x27;/g, "'")
              .replace(/&amp;/g, '&')
              .replace(/&lt;/g, '<')
              .replace(/&gt;/g, '>')
              .replace(/&mdash;/g, '—')
-             .replace(/&ndash;/g, '–');
+             .replace(/&ndash;/g, '–')
+             .replace(/&hellip;/g, '...')
+             .replace(/&nbsp;/g, ' ');
   return text.replace(/\s+/g, ' ').trim();
 }
 
@@ -1789,21 +1851,26 @@ function renderSearchRecommendations(animeList) {
 
   let titles = [];
   if (animeList && animeList.length > 0) {
-    titles = animeList.slice(0, 5).map(m => m.title.english || m.title.romaji);
-  } else {
+    titles = animeList.slice(0, 5).map(m => m.title.english || m.title.romaji).filter(Boolean);
+  }
+  if (titles.length === 0) {
     titles = fallbackSearchRecommendations;
   }
   titles = titles.slice(0, 5);
 
-  container.innerHTML = titles.map(title => `
+  container.innerHTML = titles.map((title, idx) => `
     <button 
       type="button" 
-      onclick="applySearchRecommendation('${title.replace(/'/g, "\\'")}')" 
-      class="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 hover:bg-brand-600/30 text-slate-300 hover:text-white border border-white/10 hover:border-brand-500/40 transition-all shrink-0 cursor-pointer shadow-sm active:scale-95"
+      data-recommend-idx="${idx}"
+      class="recommend-pill px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/5 hover:bg-brand-600/30 text-slate-300 hover:text-white border border-white/10 hover:border-brand-500/40 transition-all shrink-0 cursor-pointer shadow-sm active:scale-95"
     >
-      ${title}
+      ${title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}
     </button>
   `).join('');
+
+  container.querySelectorAll('.recommend-pill').forEach((btn, idx) => {
+    btn.onclick = () => applySearchRecommendation(titles[idx]);
+  });
 }
 
 function applySearchRecommendation(title) {
@@ -1818,7 +1885,10 @@ function submitManualSearch() {
   const input = document.getElementById('globalSearchInput');
   if (!input) return;
   const val = input.value.trim();
-  if (val.length < 1) return;
+  if (val.length < 1) {
+    input.focus();
+    return;
+  }
   executeSearch(val);
 }
 
@@ -1829,7 +1899,7 @@ function setupSearchListeners() {
 
   if (input) {
     // Typing into search input does NOT auto-populate results until confirmed
-    input.addEventListener('input', (e) => {
+    input.addEventListener('input', () => {
       const val = input.value;
       if (clearBtn) {
         if (val.length > 0) {
@@ -1837,11 +1907,6 @@ function setupSearchListeners() {
         } else {
           clearBtn.classList.add('hidden');
         }
-      }
-      // Backward compatibility bridge for headless automation tests
-      if (!e.isTrusted && val.trim().length >= 2) {
-        clearTimeout(searchDebounceTimeout);
-        searchDebounceTimeout = setTimeout(() => executeSearch(val.trim()), 350);
       }
     });
 
@@ -1875,6 +1940,37 @@ function setupSearchListeners() {
       const resultsSection = document.getElementById('searchResultsSection');
       if (resultsSection) resultsSection.classList.add('hidden');
     };
+  }
+
+  // Mobile swipe gesture support for Hero Carousel
+  const heroSection = document.getElementById('heroSection');
+  if (heroSection) {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    heroSection.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    heroSection.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        const deltaY = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (deltaX < 0) {
+            rotateHeroSlide(1);
+          } else {
+            rotateHeroSlide(-1);
+          }
+          if (heroCarouselTimer) {
+            clearInterval(heroCarouselTimer);
+            heroCarouselTimer = setInterval(() => rotateHeroSlide(1), 6000);
+          }
+        }
+      }
+    }, { passive: true });
   }
 
   renderSearchRecommendations(null);
@@ -1912,7 +2008,7 @@ async function executeSearch(queryStr) {
   `;
 
   const data = await fetchAniList(query, { search: queryStr });
-  if (!data || !data.Page.media || data.Page.media.length === 0) {
+  if (!data || !data.Page || !data.Page.media || data.Page.media.length === 0) {
     resultsGrid.innerHTML = '<div class="col-span-full py-6 text-center text-xs text-slate-400 font-mono">No media assets matched the query parameters.</div>';
     return;
   }

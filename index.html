@@ -412,34 +412,25 @@
       const lockDesc = {
         get: function() { return protectedOpen; },
         set: function() { /* tamper lock: disallow modification */ },
-        configurable: false
+        configurable: false,
+        enumerable: true
       };
-      try {
-        Object.defineProperty(window, 'open', lockDesc);
-      } catch (e1) {
-        try {
-          Object.defineProperty(window, 'open', {
-            value: protectedOpen,
-            writable: false,
-            configurable: false
-          });
-        } catch (e2) {
-          window.open = protectedOpen;
-        }
-      }
+
       try {
         if (typeof Window !== 'undefined' && Window.prototype) {
           Object.defineProperty(Window.prototype, 'open', lockDesc);
         }
-      } catch (e3) {
-        try {
-          Object.defineProperty(Window.prototype, 'open', {
-            value: protectedOpen,
-            writable: false,
-            configurable: false
-          });
-        } catch (e4) {}
-      }
+      } catch (e1) {}
+
+      try {
+        Object.defineProperty(window, 'open', lockDesc);
+      } catch (e2) {}
+
+      try {
+        if (typeof globalThis !== 'undefined' && globalThis !== window) {
+          Object.defineProperty(globalThis, 'open', lockDesc);
+        }
+      } catch (e3) {}
 
       // 2. Click capture interception on root document
       document.addEventListener('click', function(e) {

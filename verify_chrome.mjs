@@ -12,6 +12,15 @@ let chromeProcess = null;
 async function runTests() {
   console.log("=== INITIATING CHROME DEVTOOLS AUTOMATION (PORT " + PORT + ") ===");
   
+  // 0. Ensure local server on port 8000 is active
+  try {
+    await fetch('http://localhost:8000', { signal: AbortSignal.timeout(1500) });
+  } catch (e) {
+    console.log("Local server on port 8000 not responding. Spawning python serve.py...");
+    spawn('python', ['serve.py'], { detached: true, stdio: 'ignore' });
+    await sleep(2500);
+  }
+
   // 1. Launch Chrome Headless with Remote Debugging on Isolated Port
   chromeProcess = spawn(CHROME_PATH, [
     `--remote-debugging-port=${PORT}`,
@@ -81,10 +90,6 @@ async function runTests() {
   await sendCommand('Network.enable');
   await sendCommand('Network.setCacheDisabled', { cacheDisabled: true });
 
-  console.log("Navigating to http://localhost:8000 ...");
-  await sendCommand('Page.navigate', { url: 'http://localhost:8000' });
-  await sleep(3500); // Wait for GraphQL AniList responses
-
   // Helper evaluate
   async function evalJs(expr) {
     const res = await sendCommand('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true });
@@ -95,6 +100,22 @@ async function runTests() {
     }
     return res.result?.value;
   }
+
+  console.log("Navigating to http://localhost:8000 ...");
+  await sendCommand('Page.navigate', { url: 'http://localhost:8000' });
+
+  // Wait for navigation and document completion
+  for (let i = 0; i < 40; i++) {
+    try {
+      const state = await evalJs('document.readyState');
+      const curTitle = await evalJs('document.title');
+      if (state === 'complete' && curTitle && curTitle.includes('MILKGLASS')) {
+        break;
+      }
+    } catch (e) {}
+    await sleep(500);
+  }
+  await sleep(1500); // Allow GraphQL AniList responses to settle
 
   console.log("\n--- TEST SUITE 1: SECURITY VERIFICATION & ADSHIELD ZERO-AD DEFENSE ---");
   const title = await evalJs('document.title');
@@ -415,7 +436,7 @@ async function runTests() {
   await evalJs(`
     const input = document.getElementById('globalSearchInput');
     input.value = 'Solo Leveling';
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('globalSearchBtn').click();
   `);
   await sleep(2500);
 

@@ -16,3 +16,6 @@ generate_new_ui.py
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Agent teamwork metadata
+.agents/
