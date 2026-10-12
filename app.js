@@ -1713,3 +1713,121 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (window.lucide) lucide.createIcons();
 });
+
+
+// ==============================================================================
+// 12. APPLE & FLUENT 2 LUXURY INTERACTIVE CONTROLS
+// ==============================================================================
+
+const comparisonCatalog = [
+  {
+    id: 154587,
+    title: "Sousou no Frieren (Season 1)",
+    cameraSpec: "4K UHD Master Stream Engine with variable bitrate and Pro controls",
+    chipSpeed: "20% faster",
+    batteryHours: "6 more hours",
+    bufferSpec: "in around 15 seconds with compatible adapter and multi-CDN failover"
+  },
+  {
+    id: 189123,
+    title: "Ao no Hako Season 2 (Blue Box)",
+    cameraSpec: "1080p FHD Dual-Audio Master with dynamic range optimization",
+    chipSpeed: "24% faster",
+    batteryHours: "7 more hours",
+    bufferSpec: "in around 12 seconds with edge caching and multi-CDN failover"
+  },
+  {
+    id: 164988,
+    title: "Solo Leveling Season 2: Arise",
+    cameraSpec: "AV1 Ultra-HDR High Profile stream with Dolby Audio decode",
+    chipSpeed: "30% faster",
+    batteryHours: "8 more hours",
+    bufferSpec: "in around 10 seconds with hardware AV1 decode and failover"
+  },
+  {
+    id: 171018,
+    title: "Kimetsu no Yaiba: Infinity Castle",
+    cameraSpec: "True Cinema DCI-P3 4K Master with variable frame rate support",
+    chipSpeed: "28% faster",
+    batteryHours: "7.5 more hours",
+    bufferSpec: "in around 14 seconds with multi-CDN edge mesh and failover"
+  }
+];
+
+function toggleComparisonDropdown() {
+  const menu = document.getElementById('comparisonDropdownMenu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+function selectComparisonAnime(idx) {
+  const item = comparisonCatalog[idx];
+  if (!item) return;
+  const titleEl = document.getElementById('comparisonSelectedTitle');
+  if (titleEl) titleEl.innerText = item.title;
+  const menu = document.getElementById('comparisonDropdownMenu');
+  if (menu) menu.classList.add('hidden');
+  const chipEl = document.getElementById('comparisonChipSpeed');
+  if (chipEl) chipEl.innerText = item.chipSpeed;
+  const battEl = document.getElementById('comparisonBatteryHours');
+  if (battEl) battEl.innerText = item.batteryHours;
+  const buffEl = document.getElementById('comparisonBufferSpec');
+  if (buffEl) buffEl.innerText = item.bufferSpec;
+  const camEl = document.getElementById('comparisonCameraSpec');
+  if (camEl) camEl.innerText = item.cameraSpec;
+  showCorporateToast(`Switched comparison target to ${item.title}`);
+}
+
+function scrollToExplore() {
+  const el = document.getElementById('appleComparisonSection') || document.getElementById('watchability');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function launchFeaturedStream() {
+  const playBtn = document.getElementById('heroPlayBtn');
+  if (playBtn) playBtn.click();
+}
+
+function openEmployeeSignInModal() {
+  const modal = document.getElementById('employeeSignInModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeEmployeeSignInModal() {
+  const modal = document.getElementById('employeeSignInModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function openFeedbackModal() {
+  const modal = document.getElementById('fluentFeedbackModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+}
+
+function closeFeedbackModal() {
+  const modal = document.getElementById('fluentFeedbackModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function submitFeedback() {
+  closeFeedbackModal();
+  showCorporateToast('Feedback received. Thank you for improving Milkglass.');
+}
+
+function openIntelligenceDossier() {
+  showCorporateToast('Opening Milkglass Intelligence System Architecture specification.');
+}
+
+function toggleThemeMode() {
+  showCorporateToast('Dark High-Contrast Theme locked per Fluent 2 enterprise spec.');
+}
